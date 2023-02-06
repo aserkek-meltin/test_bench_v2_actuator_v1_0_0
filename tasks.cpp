@@ -6,13 +6,3 @@
  */
 
 #include "tasks.h"
-
-tasks::tasks() {
-	// TODO Auto-generated constructor stub
-
-}
-
-tasks::~tasks() {
-	// TODO Auto-generated destructor stub
-}
-
