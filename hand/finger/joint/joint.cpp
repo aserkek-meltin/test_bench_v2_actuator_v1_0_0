@@ -1,5 +1,5 @@
 /*
- * test_bench.cpp
+ * joint.cpp
  *
  *  Created on: Feb 6, 2023
  *      Author: ErkekAbdul
@@ -14,13 +14,13 @@
 
 #include "joint.h"
 #include "../../../system/utilities/loadcell_reader.h"
+#include "../../../system/system_settings.h"
 
-Joint::Joint(uint8_t _finger_id, uint8_t _test_bench_id, uint8_t _ita_id, uint8_t _jaa_id)
+Joint::Joint(Joint_Settings_t joint_settings_t)
 {
-	finger_id 		= _finger_id;
-	test_bench_id	= _test_bench_id;
-	ita_id 			= _ita_id;
-	jaa_id 			= _jaa_id;
+	joint_id		= joint_settings_t.joint_id;
+	ita_id 			= joint_settings_t.ita_id;
+	jaa_id 			= joint_settings_t.jaa_id;
 
 	//Initialization of members
 	its 					= {};
@@ -39,12 +39,8 @@ Joint::Joint(uint8_t _finger_id, uint8_t _test_bench_id, uint8_t _ita_id, uint8_
 
 	jaa_zero 				= 0;
 	ita_zero 				= 0;
-}
-
-
-void Joint::set_joint_torque(float _joint_torque_setpoint)
-{
-	_joint_torque_setpoint = joint_torque_setpoint;
+	jaa_mcs_curr_command 	= ecs2mcs(DEFAULT_JAA_ECS_COMMAND);
+	ita_curr_command		= DEFAULT_ITA_COMMAND;
 }
 
 bool Joint::init_devices()
@@ -52,10 +48,29 @@ bool Joint::init_devices()
 	return true;
 }
 
-void Joint::read_sensor_values(uint8_t _finger_id, uint8_t _test_bench_id)
+void Joint::loop()
+{
+	//read_sensor_values
+	//TODO - URGENT - its and gfs values are not coming to the object.
+	//there should be a outer class sending the values.
+
+	//convert joint torques to ITs
+	joint_torques_2_internal_tensions();
+	//try to keep ITs
+	it1_controller();
+	it2_controller();
+}
+
+void Joint::set_joint_torque(float _joint_torque_setpoint)
+{
+	_joint_torque_setpoint = joint_torque_setpoint;
+}
+
+
+void Joint::read_sensor_values(uint8_t _finger_id, uint8_t _joint_id)
 {
 	float  result[2];
-	read_sensors(_finger_id, _test_bench_id);
+	read_sensors(_finger_id, _joint_id);
 
 	its.raw = result[0];
 	gfs.raw = result[1];
@@ -101,7 +116,7 @@ float Joint::mcs2ecs(float angle_mcs)
 	return (sign * angle_mcs) + jaa_zero;
 }
 
-void Joint::load_default_ranges(Range_t _ita, Range_t _jaa_ecs)
+void Joint::update_ranges(Range_t _ita, Range_t _jaa_ecs)
 {
 	ita.range.min 			= _ita.min;
 	ita.range.center 		= _ita.center;
@@ -114,4 +129,22 @@ void Joint::load_default_ranges(Range_t _ita, Range_t _jaa_ecs)
 	jaa_mcs.range.min 		= ecs2mcs(jaa_ecs.range.min);
 	jaa_mcs.range.center 	= ecs2mcs(jaa_ecs.range.center);
 	jaa_mcs.range.max 		= ecs2mcs(jaa_ecs.range.max);
+}
+
+void Joint::joint_torques_2_internal_tensions()
+{
+	it1 = 0;
+	it2 = joint_torque_setpoint / JOINT_PULLEY_RADIUS_M;
+}
+
+void Joint::it1_controller()
+{
+	//TODO - URGENT - Write the IT1 Controller
+	ita_curr_command		= ita.curr_command;
+}
+
+void Joint::it2_controller()
+{
+	//TODO - URGENT - Write the IT2 Controller
+	jaa_mcs_curr_command 	= jaa_mcs.curr_command;
 }

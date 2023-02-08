@@ -12,6 +12,9 @@
 //About Setup
 #define NUMBER_OF_FINGERS			1
 #define NUMBER_OF_TB				2
+#define LENGTH_OF_LINK1_M			0.045
+#define LENGTH_OF_LINK2_M			0.045
+#define JOINT_PULLEY_RADIUS_M		0.001
 
 //About Dynamixel
 #define DXL_SERIAL   				Serial2
@@ -24,6 +27,8 @@ const float DXL_PROTOCOL_VERSION 	= 2.0;
 #define FINGER_1_JOINT_2_JAA_ID		3
 #define FINGER_1_JOINT_2_ITA_ID		4
 
+
+//TODO - URGENT - CRITICAL - Ranges is wrong and needs to be corrected
 //RANGES OF JOINTS
 //TEST BENCH 1 (MP Joint)
 //tb1 - jaa
@@ -40,6 +45,9 @@ const float DXL_PROTOCOL_VERSION 	= 2.0;
 //tb2 - ita
 #define FINGER_1_JOINT_2_ITA_MIN_RAW		    1000
 #define FINGER_1_JOINT_2_ITA_MAX_RAW		    1000
+
+#define	DEFAULT_JAA_ECS_COMMAND					0
+#define DEFAULT_ITA_COMMAND						0		//TODO - URGENT - CRITIC - This needs to be corrected
 
 
 #endif /* TEST_BENCH_V2_ACTUATOR_V1_0_0_SYSTEM_SYSTEM_SETTINGS_H_ */

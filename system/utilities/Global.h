@@ -8,6 +8,7 @@
 #ifndef TEST_BENCH_V2_ACTUATOR_V1_0_0_SYSTEM_UTILITIES_GLOBAL_H_
 #define TEST_BENCH_V2_ACTUATOR_V1_0_0_SYSTEM_UTILITIES_GLOBAL_H_
 
+#include "../../hand/hand.h"
 #include "../../hand/finger/joint/joint.h"
 #include <Dynamixel2Arduino.h>
 #include "HardwareSerial.h"
@@ -19,9 +20,8 @@ public:
 	Global();
 
 	//Objects
-	Joint			tb1;
-	Joint			tb2;
-	Dynamixel2Arduino 	dxl;
+	Hand							right_hand;
+	Dynamixel2Arduino 				dxl;
 
 	//Semahore Handles
 	SemaphoreHandle_t 				smp_communication;

@@ -1,5 +1,5 @@
 /*
- * test_bench.h
+ * joint.h
  *
  *  Created on: Feb 6, 2023
  *      Author: ErkekAbdul
@@ -9,6 +9,13 @@
 #define TEST_BENCH_V2_ACTUATOR_V1_0_0_TEST_BENCH_TEST_BENCH_H_
 #include "utilities.h"
 
+typedef struct
+{
+	uint8_t 	joint_id;
+	uint8_t 	ita_id;
+	uint8_t 	jaa_id;
+}Joint_Settings_t;
+
 class Joint {
 
 	//Each test bench controls a joint which is 2 wires.
@@ -16,17 +23,19 @@ class Joint {
 	// 2 Loadcells 	named as 	ITS and GFS
 	// 2 Dynamixels named as	ITA and JAA
 public:
-	Joint(uint8_t _finger_id, uint8_t _test_bench_id, uint8_t _ita_id, uint8_t _jaa_id);
+	Joint(Joint_Settings_t joint_settings_t);
 
 	////////////////////////
 	// Parameters
 	////////////////////////
-	uint8_t	finger_id;						//Finger ID
-	uint8_t	test_bench_id;					//Test Bench ID = Joint Angle ID
+	uint8_t	joint_id;					//Test Bench ID = Joint Angle ID
 
 	////////////////////////
 	// Functions
 	////////////////////////
+	float				ita_curr_command;			//Includes final angle command for the related Dynamixel Actuator
+	float				jaa_mcs_curr_command;		//Includes final angle command for the related Dynamixel Actuator
+
 	bool 				init_devices();
 	void				set_joint_torque(float _joint_torque_setpoint);
 	uint8_t				get_ita_id();
@@ -34,7 +43,7 @@ public:
 
 	float				ecs2mcs(float ecs);
 	float				mcs2ecs(float mcs);
-	void 				load_default_ranges(Range_t ita, Range_t jaa_ecs);
+	void 				update_ranges(Range_t ita, Range_t jaa_ecs);
 
 private:
 	uint8_t		ita_id;
@@ -58,7 +67,11 @@ private:
 	float		jaa_zero;
 	float		ita_zero;
 
-	void 		read_sensor_values(uint8_t _finger_id, uint8_t _test_bench_id);
+	void 		read_sensor_values(uint8_t _finger_id, uint8_t _joint_id);
+	void		joint_torques_2_internal_tensions();
+	void		it1_controller();
+	void		it2_controller();
+	void		loop();
 };
 
 #endif /* TEST_BENCH_V2_ACTUATOR_V1_0_0_TEST_BENCH_TEST_BENCH_H_ */
