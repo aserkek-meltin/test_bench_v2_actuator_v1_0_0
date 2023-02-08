@@ -20,6 +20,8 @@
 Joint::Joint(Joint_Settings_t joint_settings_t)
 	:it1_pid(&it1_pid_settings_t.input,  &it1_pid_settings_t.output, &it1_pid_settings_t.pid_setpoint, it1_pid_settings_t.Kp, it1_pid_settings_t.Ki, it1_pid_settings_t.Kd, REVERSE)
 	,it2_pid(&it2_pid_settings_t.input,  &it2_pid_settings_t.output, &it2_pid_settings_t.pid_setpoint, it2_pid_settings_t.Kp, it2_pid_settings_t.Ki, it2_pid_settings_t.Kd, REVERSE)
+	,its_ma(ITS_MA_FILTER_WINDOW)
+	,gfs_ma(GFS_MA_FILTER_WINDOW)
 {
 	joint_id		= joint_settings_t.joint_id;
 	ita_id 			= joint_settings_t.ita_id;
@@ -53,10 +55,6 @@ bool Joint::init_devices()
 
 void Joint::loop()
 {
-	//read_sensor_values
-	//TODO - URGENT - its and gfs values are not coming to the object.
-	//there should be a outer class sending the values.
-
 	//convert joint torques to ITs
 	joint_torques_2_internal_tensions_setpoints();
 	//try to keep ITs
@@ -69,16 +67,16 @@ void Joint::set_joint_torque(float _joint_torque_setpoint)
 	_joint_torque_setpoint = joint_torque_setpoint;
 }
 
-
-void Joint::read_sensor_values(uint8_t _finger_id, uint8_t _joint_id)
+void Joint::update_sensor_data(float _its, float _gfs)
 {
-	float  result[2];
-	read_sensors(_finger_id, _joint_id);
+	its.raw = _its;
+	gfs.raw = _gfs;
 
-	its.raw = result[0];
-	gfs.raw = result[1];
+	its.ma = its_ma.reading(its.raw);
+	gfs.ma = gfs_ma.reading(gfs.raw);
 
-	//TODO - FUTURE - MA is missing
+	its.converted = (its.ma - its.zero) * its_cal_factor * ITS_GRAM_TO_IT_N_FACTOR;
+	gfs.converted = (gfs.ma - gfs.zero) * gfs_cal_factor * GFS_GRAM_TO_FTF_N_FACTOR * GFS_CORRECTION_FACTOR;
 }
 
 void Joint::calculate_it1_it2_estimateds()
@@ -191,7 +189,7 @@ void Joint::it1_controller()
 	it1_pid_settings_t.input = it1_estimated;
 	//it2_settings_t.input = it2_estimated;
 
-	if(true) //TODO - CRITIC - PID On Off ozelligi eklenmeli.
+	if(it1_pid_settings_t.is_control_on)
 	{
 		it1_pid.Compute();
 	}
@@ -207,7 +205,7 @@ void Joint::it2_controller()
 
 	it2_pid_settings_t.input = it2_estimated;
 
-	if(true) //TODO - CRITIC - PID On Off ozelligi eklenmeli.
+	if(it2_pid_settings_t.is_control_on)
 	{
 		it2_pid.Compute();
 	}

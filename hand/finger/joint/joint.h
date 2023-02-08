@@ -9,12 +9,15 @@
 #define TEST_BENCH_V2_ACTUATOR_V1_0_0_TEST_BENCH_TEST_BENCH_H_
 #include "utilities.h"
 #include <PID_v1.h>
+#include "movingAvg.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //DEFINES----------------------------------------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define GFS_CORRECTION_FACTOR			1/0.6892
 #define GFS_TO_IT_CALCULATION_FACTOR	21.7643		//0.15/0.01*GFS_CORRECTION_FACTOR
+#define ITS_GRAM_TO_IT_N_FACTOR			0.00981 //(g[9.81]/1000)
+#define GFS_GRAM_TO_FTF_N_FACTOR 		0.000654
 
 #define	IT1_DEFAULT_SAMPLE_TIME			 1
 #define	IT1_DEFAULT_MIN_OUTPUT_LIMIT	 -7500
@@ -24,7 +27,13 @@
 #define	IT2_DEFAULT_MIN_OUTPUT_LIMIT	 -55
 #define	IT2_DEFAULT_MAX_OUTPUT_LIMIT	 55
 
+#define ITS_MA_FILTER_WINDOW 			10
+#define GFS_MA_FILTER_WINDOW 			10
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//STRUCTS----------------------------------------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 typedef struct
 {
 	uint8_t 	joint_id;
@@ -32,6 +41,9 @@ typedef struct
 	uint8_t 	jaa_id;
 }Joint_Settings_t;
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//CLASS------------------------------------------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class Joint {
 
 	//Each test bench controls a joint which is 2 wires.
@@ -41,27 +53,24 @@ class Joint {
 public:
 	Joint(Joint_Settings_t joint_settings_t);
 
-	////////////////////////
-	// Parameters
-	////////////////////////
+	//PUBLIC PARAMETERS-------------------------------------------------------------------------------------------------
 	uint8_t	joint_id;					//Test Bench ID = Joint Angle ID
-
-	////////////////////////
-	// Functions
-	////////////////////////
 	float				ita_curr_command;			//Includes final angle command for the related Dynamixel Actuator
 	float				jaa_mcs_curr_command;		//Includes final angle command for the related Dynamixel Actuator
 
+	//PUBLIC FUNCTIONS--------------------------------------------------------------------------------------------------
 	bool 				init_devices();
 	void				set_joint_torque(float _joint_torque_setpoint);
 	uint8_t				get_ita_id();
 	uint8_t				get_jaa_id();
-
-	float				ecs2mcs(float ecs);
-	float				mcs2ecs(float mcs);
 	void 				update_ranges(Range_t ita, Range_t jaa_ecs);
+	void				update_sensor_data(float _its, float _gfs);
+	void				loop();
 
 private:
+	//PRIVATE PARAMETERS------------------------------------------------------------------------------------------------
+	float				its_cal_factor;
+	float				gfs_cal_factor;
 	uint8_t				ita_id;
 	uint8_t				jaa_id;
 
@@ -78,6 +87,9 @@ private:
 	PID					it1_pid;
 	PID					it2_pid;
 
+	movingAvg			its_ma;
+	movingAvg			gfs_ma;
+
 
 	float 				joint_torque_setpoint;
 	float				it1_estimated;
@@ -90,7 +102,7 @@ private:
 	float				jaa_zero;
 	float				ita_zero;
 
-	void 				read_sensor_values(uint8_t _finger_id, uint8_t _joint_id);
+	//PRIVATE FUNCTIONS-------------------------------------------------------------------------------------------------
 	void				calculate_it1_it2_estimateds();
 	void				joint_torques_2_internal_tensions_setpoints();
 	void				it1_controller_initialization();
@@ -103,9 +115,10 @@ private:
 	float				jaa_check_range_ecs(float angle_ecs);
 	void				ita_calculate_output_safe();
 	void				jaa_calculate_output_safe();
+	float				ecs2mcs(float ecs);
+	float				mcs2ecs(float mcs);
 	float				it2_pid_to_ecs(float pid_output);
 
-	void				loop();
 };
 
 #endif /* TEST_BENCH_V2_ACTUATOR_V1_0_0_TEST_BENCH_TEST_BENCH_H_ */

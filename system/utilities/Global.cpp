@@ -50,6 +50,18 @@ void Global::GL_initialize()
 
 }
 
+void Global::raise_command_recieved_flag_for_x_sec(int sec)
+{
+	if((int)(GL.temp_command_recieved_counter/sec) >= 1)
+	{
+		GL.status_u.status_t.COMMAND_RECIEVED = false;
+	}
+	else if(GL.status_u.status_t.COMMAND_RECIEVED && (int)(GL.temp_command_recieved_counter/sec) < 1)
+	{
+		GL.temp_command_recieved_counter++;
+	}
+}
+
 float wrap360(float angle)
 {
 	if(angle < 0)

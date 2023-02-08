@@ -28,9 +28,9 @@ void sam_pro_pack_send(const 	SAM_Pack_t * 	p_sam_pack_t,
 	tmp_u8[i++] = p_sam_pack_t->CRC_MSByte_u8;
 	tmp_u8[i++] = p_sam_pack_t->CRC_LSByte_u8;
 
-	xSemaphoreTake(GL.smp_communication, portMAX_DELAY);
+	xSemaphoreTake(GL.smp_sam_communication, portMAX_DELAY);
 	Serial.write(tmp_u8, 65);
-	xSemaphoreGive(GL.smp_communication);
+	xSemaphoreGive(GL.smp_sam_communication);
 }
 /*
 	for (int i=0; i<SAM_PACK_MAX_LENGTH + SAM_PACK_OVERAGE; i++)

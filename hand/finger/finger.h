@@ -31,7 +31,7 @@ public:
 
 	void				set_fingertip_force(float _fingertip_force_setpoint);
 	float				get_fingertip_force();
-
+	void 				loop();
 
 private:
 	float 				fingertip_force_setpoint;

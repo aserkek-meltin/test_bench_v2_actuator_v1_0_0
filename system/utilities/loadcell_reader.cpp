@@ -40,12 +40,12 @@ bool init_loadcells()
 	}
 }
 
-float * read_sensors(uint8_t finger_id, uint8_t test_bench_id)
+float * read_sensors(uint8_t finger_id, uint8_t joint_id)
 {
 	float  result[2];
 
-	result[0] = its_loadcell[finger_id][test_bench_id].getReading();
-	result[1] = gfs_loadcell[finger_id][test_bench_id].getReading();
+	result[0] = its_loadcell[finger_id][joint_id].getReading();
+	result[1] = gfs_loadcell[finger_id][joint_id].getReading();
 
 	return result;
 }

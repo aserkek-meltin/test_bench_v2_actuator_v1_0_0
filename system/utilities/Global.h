@@ -24,7 +24,7 @@ public:
 	Dynamixel2Arduino 				dxl;
 
 	//Semahore Handles
-	SemaphoreHandle_t 				smp_communication;
+	SemaphoreHandle_t 				smp_sam_communication;
 	SemaphoreHandle_t 				smp_dxl_communication;
 
 
@@ -44,7 +44,10 @@ public:
 	Test_Bit_u						test_bit1_u;
 	Test_Bit_u						test_bit2_u;
 
+	uint32_t						system_counter_s;
+
 	void GL_initialize();
+	void raise_command_recieved_flag_for_x_sec(int sec);
 };
 
 extern Global GL;

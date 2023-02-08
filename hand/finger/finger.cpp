@@ -41,3 +41,11 @@ void Finger::fingertip_force_2_joint_torques()
 	joint1.set_joint_torque(JT1);
 	joint2.set_joint_torque(JT2);
 }
+
+void Finger::loop()
+{
+	joint1.loop();
+	joint2.loop();
+	//joint3.loop();
+	//joint4.loop();
+}

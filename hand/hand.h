@@ -33,6 +33,8 @@ public:
 	Finger		middle_finger;
 	Finger		ring_finger;
 	Finger		pinky_finger;
+
+	void		loop();
 };
 
 #endif /* TEST_BENCH_V2_ACTUATOR_V1_0_0_HAND_HAND_H_ */
