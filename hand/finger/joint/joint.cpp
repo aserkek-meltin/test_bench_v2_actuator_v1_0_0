@@ -3,12 +3,19 @@
  *
  *  Created on: Feb 6, 2023
  *      Author: ErkekAbdul
+ *
+ *      This class is written for a Test Bench.
+ *      Each test_bench is basically responsible from a one joint of the hand.
+ *      So, it is the basic element of the system
+ *      It takes Required Joint Torque and Required Joint Angle. It tries its best to achive for those.
+ *      Any compensation, control should be given as a input to Test Bench object.
+ *      So, there should be outer, wider manager to decide joint torques etc.
  */
 
-#include "test_bench.h"
-#include "../system/utilities/loadcell_reader.h"
+#include "joint.h"
+#include "../../../system/utilities/loadcell_reader.h"
 
-Test_Bench::Test_Bench(uint8_t _finger_id, uint8_t _test_bench_id, uint8_t _ita_id, uint8_t _jaa_id)
+Joint::Joint(uint8_t _finger_id, uint8_t _test_bench_id, uint8_t _ita_id, uint8_t _jaa_id)
 {
 	finger_id 		= _finger_id;
 	test_bench_id	= _test_bench_id;
@@ -35,17 +42,17 @@ Test_Bench::Test_Bench(uint8_t _finger_id, uint8_t _test_bench_id, uint8_t _ita_
 }
 
 
-void Test_Bench::set_joint_torque(float _joint_torque_setpoint)
+void Joint::set_joint_torque(float _joint_torque_setpoint)
 {
 	_joint_torque_setpoint = joint_torque_setpoint;
 }
 
-bool Test_Bench::init_devices()
+bool Joint::init_devices()
 {
 	return true;
 }
 
-void Test_Bench::read_sensor_values(uint8_t _finger_id, uint8_t _test_bench_id)
+void Joint::read_sensor_values(uint8_t _finger_id, uint8_t _test_bench_id)
 {
 	float  result[2];
 	read_sensors(_finger_id, _test_bench_id);
@@ -56,17 +63,17 @@ void Test_Bench::read_sensor_values(uint8_t _finger_id, uint8_t _test_bench_id)
 	//FIXME - MA is missing
 }
 
-uint8_t Test_Bench::get_ita_id()
+uint8_t Joint::get_ita_id()
 {
 	return ita_id;
 }
 
-uint8_t Test_Bench::get_jaa_id()
+uint8_t Joint::get_jaa_id()
 {
 	return jaa_id;
 }
 
-float Test_Bench::ecs2mcs(float angle_ecs)
+float Joint::ecs2mcs(float angle_ecs)
 {
 	uint8_t sign = 0;
 	if(is_ita_sign_positive)
@@ -80,7 +87,7 @@ float Test_Bench::ecs2mcs(float angle_ecs)
 	return (sign * angle_ecs) + jaa_zero;
 }
 
-float Test_Bench::mcs2ecs(float angle_mcs)
+float Joint::mcs2ecs(float angle_mcs)
 {
 	uint8_t sign = 0;
 	if(is_ita_sign_positive)
@@ -94,7 +101,7 @@ float Test_Bench::mcs2ecs(float angle_mcs)
 	return (sign * angle_mcs) + jaa_zero;
 }
 
-void Test_Bench::load_default_ranges(Range_t _ita, Range_t _jaa_ecs)
+void Joint::load_default_ranges(Range_t _ita, Range_t _jaa_ecs)
 {
 	ita.range.min 			= _ita.min;
 	ita.range.center 		= _ita.center;

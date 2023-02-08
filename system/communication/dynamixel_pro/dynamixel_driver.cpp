@@ -1,16 +1,15 @@
 /*
- * actuator_driver.cpp
+ * dynamixel_driver.cpp
  *
- *  Created on: Feb 6, 2023
+ *  Created on: Feb 8, 2023
  *      Author: ErkekAbdul
  */
 
-#include "actuator_driver.h"
+#include "dynamixel_driver.h"
+#include "../../utilities/Global.h"
+#include "../../system_settings.h"
 
-#include "../system_settings.h"
-#include "Global.h"
-
-bool actuator_initialization()
+bool dynamixel_initialization()
 {
 	bool is_initialized = true;
 	GL.dxl.begin(4000000);
@@ -24,4 +23,12 @@ bool actuator_initialization()
 	return is_initialized;
 }
 
+void torques_off()
+{
 
+}
+
+void torques_on()
+{
+
+}

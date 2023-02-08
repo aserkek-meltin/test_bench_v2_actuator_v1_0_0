@@ -9,14 +9,14 @@
 #define TEST_BENCH_V2_ACTUATOR_V1_0_0_TEST_BENCH_TEST_BENCH_H_
 #include "utilities.h"
 
-class Test_Bench {
+class Joint {
 
 	//Each test bench controls a joint which is 2 wires.
 	//There is;
 	// 2 Loadcells 	named as 	ITS and GFS
 	// 2 Dynamixels named as	ITA and JAA
 public:
-	Test_Bench(uint8_t _finger_id, uint8_t _test_bench_id, uint8_t _ita_id, uint8_t _jaa_id);
+	Joint(uint8_t _finger_id, uint8_t _test_bench_id, uint8_t _ita_id, uint8_t _jaa_id);
 
 	////////////////////////
 	// Parameters
