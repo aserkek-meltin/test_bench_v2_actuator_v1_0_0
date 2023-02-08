@@ -11,7 +11,7 @@
 void pack_send(	UINT8 * p_data_u8, UINT16 d_data_length, UINT32	bus)
 {
 	//Hatlara gore ayirabilirsin.
-	//TODO - Gonderme fonksiyonunu yazalim.
+	//TODO - FUTURE - Gonderme fonksiyonunu yazalim.
 }
 
 void sam_pro_pack_send(const 	SAM_Pack_t * 	p_sam_pack_t,
@@ -23,7 +23,7 @@ void sam_pro_pack_send(const 	SAM_Pack_t * 	p_sam_pack_t,
 	for(i = 0; i<SAM_PACK_HEADER + p_sam_pack_t->data_lenght_u8; i++)
 	{
 		tmp_u8[i] = ((UINT8 *) p_sam_pack_t)[i];
-		//tmp_u8[i] = ( p_sam_pack_t)[i]; //TODO - Burada sorun olabilir
+		//tmp_u8[i] = ( p_sam_pack_t)[i];
 	}
 	tmp_u8[i++] = p_sam_pack_t->CRC_MSByte_u8;
 	tmp_u8[i++] = p_sam_pack_t->CRC_LSByte_u8;
@@ -47,7 +47,7 @@ void send_status_pack()
 	SAM_Pack_t 			pack_to_be_sent_t 	= {0};
 	Sam_Status_Pack_t 	status_pack_t		= {0};
 /*
-	//TODO - Paketin icini dolduralim.
+	//TODO - Communication - Paketin icini dolduralim.
 	status_pack_t.system_counter_s 	= GL.system_counter_s;
 
 	status_pack_t.errors			= errors;
@@ -108,7 +108,7 @@ void send_test_pack()
 	SAM_Pack_t 			pack_to_be_sent_t 	= {0};
 	Sam_Test_Pack_t 	test_pack_t			= {0};
 /*
-	//TODO - Paketin icini dolduralim.
+	//TODO - Communication - Paketin icini dolduralim.
 	test_pack_t.test_value1_u32 = GL.system_counter_s; //GL.sam_test_pack_t.test_value1_u32;
 
 	test_pack_t.test_bits1			= test_bits1;

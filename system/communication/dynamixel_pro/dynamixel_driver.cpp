@@ -26,7 +26,7 @@ bool dynamixel_initialization()
 
 void ranges_initialization()
 {
-	//TODO = FUTURE - Can take ranges from EEPROM.
+	//TODO - FUTURE - Can take ranges from EEPROM.
 	//Initialize the ranges of the Joints
 	Range_t ita;
 	Range_t jaa_ecs;
