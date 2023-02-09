@@ -102,34 +102,6 @@ uint8_t Joint::get_jaa_id()
 	return jaa_id;
 }
 
-float Joint::ecs2mcs(float angle_ecs)
-{
-	uint8_t sign = 0;
-	if(is_ita_sign_positive)
-	{
-		sign = 1;
-	}
-	else
-	{
-		sign = -1;
-	}
-	return (sign * angle_ecs) + jaa_zero;
-}
-
-float Joint::mcs2ecs(float angle_mcs)
-{
-	uint8_t sign = 0;
-	if(is_ita_sign_positive)
-	{
-		sign = 1;
-	}
-	else
-	{
-		sign = -1;
-	}
-	return (sign * angle_mcs) + jaa_zero;
-}
-
 void Joint::update_ranges(Range_t _ita, Range_t _jaa_ecs)
 {
 	ita.range.min 			= _ita.min;
@@ -275,7 +247,7 @@ float Joint::jaa_check_range_ecs(float angle_ecs)
 	}
 }
 
-// SET ANGLES SAFE /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SET ANGLE COMMANDS SAFE /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Joint::jaa_set_ecs_angle_command(float ecs)
 {
 	jaa_ecs.prev_command = jaa_ecs.curr_command;
@@ -290,6 +262,42 @@ void Joint::ita_set_pos_command(float pos)
 	ita.prev_command = ita.curr_command;
 	ita.curr_command = ita_check_range(pos);
 }
+
+
+// SET ANGLE READINGS SAFE /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//This functions are for arranging the actuator angle data that is read from the dynamixel syncread.
+void Joint::jaa_set_mcs_angle_readings(float mcs)
+{
+	jaa_ecs.previous = jaa_ecs.current;
+	jaa_ecs.current	 = mcs2ecs(mcs);
+
+	jaa_mcs.previous = ecs2mcs(jaa_ecs.previous);
+	jaa_mcs.current  = ecs2mcs(jaa_ecs.current);
+}
+
+void Joint::ita_set_angle_readings(float pos)
+{
+	ita.previous = ita.current;
+	ita.current	 = pos;
+}
+
+// GET CURRENT DYNAMIXEL ANGLEs /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+float Joint::get_jaa_mcs_angle()
+{
+	return jaa_mcs.current;
+}
+
+float Joint::get_jaa_ecs_angle()
+{
+	return jaa_ecs.current;
+}
+
+float Joint::get_ita_angle()
+{
+	return ita.current;
+}
+
 
 // PID OUT TO ACTUATOR COMMAND WITH RANGE CHECK ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Joint::ita_calculate_output_safe()
@@ -332,8 +340,59 @@ void Joint::jaa_calculate_output_safe()
 	}
 }
 
+// COORDINATE SYSTEM CONVERSION FUNCTIONS
 float Joint::it2_pid_to_ecs(float pid_output)
 {
-	return (wrap360(pid_output + 325));
+	//TODO - CRITIC - Burayi duzeltelim.
+	return (pid_output - 35);
 }
 
+float Joint::ecs2mcs(float angle_ecs)
+{
+	if(angle_ecs > 20)
+	{
+		angle_ecs = 20;
+	}
+	else if(angle_ecs < -90)
+	{
+		angle_ecs = -90;
+	}
+	long angle_mcs = map(angle_ecs, -90, 20, jaa_mcs.range.min, jaa_mcs.range.max);
+
+	return (float)angle_mcs;
+}
+
+float Joint::mcs2ecs(float angle_mcs)
+{
+	if(is_jaa_sign_positive)
+	{
+		if(angle_mcs > jaa_mcs.range.max)
+		{
+			angle_mcs = jaa_mcs.range.max;
+		}
+		else if(angle_mcs < jaa_mcs.range.min)
+		{
+			angle_mcs = jaa_mcs.range.min;
+		}
+	}
+	else
+	{
+		if(angle_mcs < jaa_mcs.range.max)
+		{
+			angle_mcs = jaa_mcs.range.max;
+		}
+		else if(angle_mcs > jaa_mcs.range.min)
+		{
+			angle_mcs = jaa_mcs.range.min;
+		}
+	}
+
+	long angle_ecs = map(angle_mcs, jaa_mcs.range.min, jaa_mcs.range.max, -90, 20);
+
+	return (float)angle_mcs;
+}
+
+bool Joint::is_controller_on()
+{
+	return it1_pid_settings_t.is_control_on & it2_pid_settings_t.is_control_on;
+}

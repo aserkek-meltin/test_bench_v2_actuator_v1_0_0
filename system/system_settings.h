@@ -20,6 +20,8 @@
 #define DXL_SERIAL   				Serial2
 const int 	DXL_DIR_PIN 			= 2;
 const float DXL_PROTOCOL_VERSION 	= 2.0;
+const int DXL_CNT 					= 4;
+const int DXL_LIST[DXL_CNT] 		= {1, 2, 3, 4};
 
 //DYNAMIXEL IDs
 #define FINGER_1_JOINT_1_JAA_ID		1
@@ -35,16 +37,16 @@ const float DXL_PROTOCOL_VERSION 	= 2.0;
 #define FINGER_1_JOINT_1_JAA_MIN_ECS_DEG		270
 #define FINGER_1_JOINT_1_JAA_MAX_ECS_DEG		20
 //tb1 - ita
-#define FINGER_1_JOINT_1_ITA_MIN_RAW			1000
-#define FINGER_1_JOINT_1_ITA_MAX_RAW			1000
+#define FINGER_1_JOINT_1_ITA_MIN_RAW			5907
+#define FINGER_1_JOINT_1_ITA_MAX_RAW			104
 ////////////////////////////////////////////////////////////////////////////
 //TEST BENCH 2 (PIP Joint)
 //tb2 - jaa
 #define FINGER_1_JOINT_2_JAA_MIN_ECS_DEG		270
 #define FINGER_1_JOINT_2_JAA_MAX_ECS_DEG		20
 //tb2 - ita
-#define FINGER_1_JOINT_2_ITA_MIN_RAW		    1000
-#define FINGER_1_JOINT_2_ITA_MAX_RAW		    1000
+#define FINGER_1_JOINT_2_ITA_MIN_RAW		    0
+#define FINGER_1_JOINT_2_ITA_MAX_RAW		    4393
 
 #define	DEFAULT_JAA_ECS_COMMAND					0
 #define DEFAULT_ITA_COMMAND						0		//TODO - CRITIC - This needs to be corrected

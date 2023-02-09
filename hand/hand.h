@@ -9,6 +9,8 @@
 #define TEST_BENCH_V2_ACTUATOR_V1_0_0_HAND_HAND_H_
 
 #include "finger/finger.h"
+#include "../system/system_settings.h"
+#include "../system/communication/dynamixel_pro/dynamixel_driver.h"
 
 typedef struct
 {
@@ -34,7 +36,13 @@ public:
 	//Finger		ring_finger;
 	//Finger		pinky_finger;
 
-	void		loop();
+
+	void							recieve_all_dynamixel_commands();
+	std::array<float, DXL_CNT>		get_dynamixel_commands();
+	void							loop();
+
+private:
+	std::array<float, DXL_CNT> 		pwm_pos_commands;
 };
 
 #endif /* TEST_BENCH_V2_ACTUATOR_V1_0_0_HAND_HAND_H_ */

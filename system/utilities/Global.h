@@ -9,11 +9,9 @@
 #define TEST_BENCH_V2_ACTUATOR_V1_0_0_SYSTEM_UTILITIES_GLOBAL_H_
 
 #include "../../hand/hand.h"
-#include "../../hand/finger/joint/joint.h"
 #include <Dynamixel2Arduino.h>
 #include "HardwareSerial.h"
 #include "../communication/sam_pro/comm_packs.h"
-
 
 class Global {
 public:

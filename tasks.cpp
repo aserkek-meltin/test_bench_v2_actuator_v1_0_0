@@ -8,6 +8,7 @@
 #include "tasks.h"
 #include "../test_bench_v2_actuator_v1_0_0/system/utilities/Global.h"
 #include "../test_bench_v2_actuator_v1_0_0/system/communication/sam_pro/comm_core/send_pack.h"
+#include "../test_bench_v2_actuator_v1_0_0/system/communication/dynamixel_pro/dynamixel_driver.h"
 
 
 void task_system( void * parameter )
@@ -54,19 +55,19 @@ void task_loadcells_read( void * parameter )
 	for (;;){t_start = millis();
 
 	//TASK CODE BELOW
-	std::array<float, 2> result; //array with length 5
+	std::array<float, 2> result;
 	result = read_sensors(1, 1);
+	GL.right_hand.thumb_finger.joint1.update_sensor_data(result[0], result[1]);
 
+	/*
+	result = read_sensors(1, 2);
 	Serial.println(result[0]);
 	Serial.println(result[1]);
+	Serial.println("--------------------");
 
-	//GL.right_hand.thumb_finger.joint2.update_sensor_data();
-	GL.right_hand.thumb_finger.joint1.update_sensor_data(result[0], result[1]);
-	/*
-
-	temp = read_sensors(1, 2);
-	GL.right_hand.index_finger.joint2.update_sensor_data(result[0], result[1]);
+	GL.right_hand.thumb_finger.joint2.update_sensor_data(result[0], result[1]);
 	*/
+
 	//TASK CODE ABOVE
 
 		t_end = millis();
@@ -99,7 +100,8 @@ void task_actuator_pos_send( void * parameter )
 	for (;;){t_start = millis();
 
 	//TASK CODE BELOW
-	//TODO - MOTOR - Motor SyncWrite Yazalim
+	std::array<float, DXL_CNT> temp = GL.right_hand.get_dynamixel_commands();
+	dynamixel_sync_write(temp);
 	//TASK CODE ABOVE
 
 		t_end = millis();
@@ -115,7 +117,18 @@ void task_actuator_pos_read( void * parameter )
 	for (;;){t_start = millis();
 
 	//TASK CODE BELOW
-	//TODO - MOTOR - Motor SyncRead Yazalim
+	dynamixel_sync_read();
+	Serial.print("1 JAA MCS: ");
+	Serial.println(GL.right_hand.thumb_finger.joint1.get_jaa_mcs_angle());
+	Serial.print("1 ITA: ");
+	Serial.println(GL.right_hand.thumb_finger.joint1.get_ita_angle());
+
+	Serial.print("2 JAA ECS: ");
+	Serial.println(GL.right_hand.thumb_finger.joint2.get_jaa_mcs_angle());
+	Serial.print("2 ITA: ");
+	Serial.println(GL.right_hand.thumb_finger.joint2.get_ita_angle());
+
+
 	//TASK CODE ABOVE
 
 		t_end = millis();
@@ -123,3 +136,4 @@ void task_actuator_pos_read( void * parameter )
 		else { vTaskDelay(period - (t_end -t_start) / portTICK_PERIOD_MS); }
 	}
 }
+

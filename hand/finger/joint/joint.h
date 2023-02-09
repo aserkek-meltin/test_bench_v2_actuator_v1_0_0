@@ -10,6 +10,8 @@
 #include "utilities.h"
 #include <PID_v1.h>
 #include "movingAvg.h"
+#include <array>
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //DEFINES----------------------------------------------------------------------------------------------------------
@@ -63,9 +65,19 @@ public:
 	void				set_joint_torque(float _joint_torque_setpoint);
 	uint8_t				get_ita_id();
 	uint8_t				get_jaa_id();
+	void				get_dynamixel_positions(std::array<float, 2> positions);
 	void 				update_ranges(Range_t ita, Range_t jaa_ecs);
 	void 				update_sensor_data(float _its, float _gfs);
+	void 				jaa_set_mcs_angle_readings(float mcs);
+	void 				ita_set_angle_readings(float pos);
+	float 				get_jaa_mcs_angle();
+	float 				get_jaa_ecs_angle();
+	float 				get_ita_angle();
+	float				ecs2mcs(float ecs);
+	float				mcs2ecs(float mcs);
+	bool				is_controller_on();
 	void				loop();
+
 
 private:
 	//PRIVATE PARAMETERS------------------------------------------------------------------------------------------------
@@ -102,6 +114,7 @@ private:
 	float				jaa_zero;
 	float				ita_zero;
 
+
 	//PRIVATE FUNCTIONS-------------------------------------------------------------------------------------------------
 	void				calculate_it1_it2_estimateds();
 	void				joint_torques_2_internal_tensions_setpoints();
@@ -115,8 +128,6 @@ private:
 	float				jaa_check_range_ecs(float angle_ecs);
 	void				ita_calculate_output_safe();
 	void				jaa_calculate_output_safe();
-	float				ecs2mcs(float ecs);
-	float				mcs2ecs(float mcs);
 	float				it2_pid_to_ecs(float pid_output);
 
 };
