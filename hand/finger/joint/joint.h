@@ -64,7 +64,7 @@ public:
 	uint8_t				get_ita_id();
 	uint8_t				get_jaa_id();
 	void 				update_ranges(Range_t ita, Range_t jaa_ecs);
-	void				update_sensor_data(float _its, float _gfs);
+	void 				update_sensor_data(float _its, float _gfs);
 	void				loop();
 
 private:

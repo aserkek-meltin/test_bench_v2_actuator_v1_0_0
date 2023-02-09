@@ -46,10 +46,17 @@ Joint::Joint(Joint_Settings_t joint_settings_t)
 	ita_zero 				= 0;
 	jaa_mcs_curr_command 	= ecs2mcs(DEFAULT_JAA_ECS_COMMAND);
 	ita_curr_command		= DEFAULT_ITA_COMMAND;
+
+	its_ma.begin();
+	gfs_ma.begin();
+
+	//Serial.println("Joint Constructor is called.");
+	//Serial.print ("Joint :");		Serial.println(joint_id);
 }
 
 bool Joint::init_devices()
 {
+	Serial.println("OK");
 	return true;
 }
 

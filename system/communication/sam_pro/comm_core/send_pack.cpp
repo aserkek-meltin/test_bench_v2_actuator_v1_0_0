@@ -46,9 +46,9 @@ void send_status_pack()
 {
 	SAM_Pack_t 			pack_to_be_sent_t 	= {0};
 	Sam_Status_Pack_t 	status_pack_t		= {0};
+	status_pack_t.system_counter_s 	= GL.system_counter_s;
 /*
 	//TODO - Communication - Paketin icini dolduralim.
-	status_pack_t.system_counter_s 	= GL.system_counter_s;
 
 	status_pack_t.errors			= errors;
 	status_pack_t.status			= status;

@@ -29,10 +29,10 @@ public:
 	uint8_t		hand_id;
 
 	Finger		thumb_finger;
-	Finger		index_finger;
-	Finger		middle_finger;
-	Finger		ring_finger;
-	Finger		pinky_finger;
+	//Finger		index_finger;
+	//Finger		middle_finger;
+	//Finger		ring_finger;
+	//Finger		pinky_finger;
 
 	void		loop();
 };

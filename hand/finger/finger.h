@@ -26,8 +26,8 @@ public:
 	uint8_t				finger_id;
 	Joint				joint1;
 	Joint				joint2;
-	Joint				joint3;
-	Joint				joint4;
+	//Joint				joint3;
+	//Joint				joint4;
 
 	void				set_fingertip_force(float _fingertip_force_setpoint);
 	float				get_fingertip_force();

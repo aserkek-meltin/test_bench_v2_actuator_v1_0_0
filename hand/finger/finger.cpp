@@ -12,11 +12,13 @@
 Finger::Finger(Finger_Settings_t finger_settings_t)
 	:joint1(finger_settings_t.joint1_settings_t)
 	,joint2(finger_settings_t.joint2_settings_t)
-	,joint3(finger_settings_t.joint3_settings_t)
-	,joint4(finger_settings_t.joint4_settings_t)
+	//,joint3(finger_settings_t.joint3_settings_t)
+	//,joint4(finger_settings_t.joint4_settings_t)
 {
 	finger_id = finger_settings_t.finger_id;
 	fingertip_force_setpoint = 0;
+	//Serial.println("Finger Constructor is called.");
+	//Serial.print ("Finger :");		Serial.println (finger_id);
 }
 
 void Finger::set_fingertip_force(float _fingertip_force_setpoint)

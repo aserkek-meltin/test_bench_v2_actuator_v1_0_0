@@ -30,13 +30,13 @@ void task_system( void * parameter )
 
 void task_send_comm_pack( void * parameter )
 {
-	int freq 			=  50;
+	int freq 			=  5;
 
     int period 	= (1000 / freq); long t_start = 0; long t_end = 0;
 	for (;;){t_start = millis();
 
 	//TASK CODE BELOW
-	send_status_pack();
+	//send_status_pack();
 	//TASK CODE ABOVE
 
 		t_end = millis();
@@ -48,18 +48,25 @@ void task_send_comm_pack( void * parameter )
 
 void task_loadcells_read( void * parameter )
 {
-	int freq 			=  50;
+	int freq 			=  5;
 
     int period 	= (1000 / freq); long t_start = 0; long t_end = 0;
 	for (;;){t_start = millis();
 
 	//TASK CODE BELOW
-	float *temp;
-	temp = read_sensors(1, 1);
-	GL.right_hand.index_finger.joint1.update_sensor_data(temp[0], temp[1]);
+	std::array<float, 2> result; //array with length 5
+	result = read_sensors(1, 1);
+
+	Serial.println(result[0]);
+	Serial.println(result[1]);
+
+	//GL.right_hand.thumb_finger.joint2.update_sensor_data();
+	GL.right_hand.thumb_finger.joint1.update_sensor_data(result[0], result[1]);
+	/*
 
 	temp = read_sensors(1, 2);
-	GL.right_hand.index_finger.joint2.update_sensor_data(temp[0], temp[1]);
+	GL.right_hand.index_finger.joint2.update_sensor_data(result[0], result[1]);
+	*/
 	//TASK CODE ABOVE
 
 		t_end = millis();
