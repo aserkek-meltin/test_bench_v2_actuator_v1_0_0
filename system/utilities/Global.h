@@ -44,13 +44,19 @@ public:
 
 	uint32_t						system_counter_s;
 
+	//Temporaries
+	uint8_t							pid_selector;
+
 	void GL_initialize();
 	void raise_command_recieved_flag_for_x_sec(int sec);
+
 };
 
 extern Global GL;
 
 //COMMON FUNCTIONS
 float wrap360(float angle);
+void read_serial_communication();
+void read_Serial_port();
 
 #endif /* TEST_BENCH_V2_ACTUATOR_V1_0_0_SYSTEM_UTILITIES_GLOBAL_H_ */

@@ -7,6 +7,7 @@
 
 #include "Global.h"
 #include "../system_settings.h"
+#include "../../system/communication/dynamixel_pro/dynamixel_driver.h"
 
 Hand_Settings_t default_hand_settings_t = {	1,	//uint8_t hand_id;
 
@@ -113,5 +114,48 @@ float wrap360(float angle)
 	else //degree >= 0 && degree < 360
 	{
 		return angle;
+	}
+}
+
+void read_serial_communication()
+{
+	byte buffer[255];
+
+	xSemaphoreTake(GL.smp_sam_communication, portMAX_DELAY);
+	int bytes_to_read = Serial.available();
+	if(bytes_to_read > 0 && bytes_to_read < 255)
+	{
+		Serial.readBytes(buffer, bytes_to_read);
+		GL.new_data = true;
+	}
+	else
+	{
+		//BUFFER OVERFLOW
+	}
+	xSemaphoreGive(GL.smp_sam_communication);
+
+	if(GL.new_data)
+	{
+		GL.new_data = false;
+		Catch_Data_From_Bytes(GL.sam_channel_t, buffer, bytes_to_read);
+	}
+}
+
+
+void read_Serial_port()
+{
+	byte incoming;
+
+	if (Serial.available())
+	{
+		bool new_pid = false;
+		incoming = Serial.read();
+		if (incoming == 's'){
+			torques_off();
+		}
+		else if (incoming == 'c')
+		{
+			torques_on();
+		}
 	}
 }

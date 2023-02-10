@@ -13,6 +13,7 @@
 
 void task_system				( void * parameter );
 void task_send_comm_pack		( void * parameter );
+void task_read_comm				( void * parameter );
 void task_loadcells_read		( void * parameter );
 void task_right_hand			( void * parameter );
 //void task_left_hand				( void * parameter );

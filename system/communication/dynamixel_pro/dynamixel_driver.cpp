@@ -71,25 +71,25 @@ void ranges_initialization()
 	//TODO - FUTURE - Can take ranges from EEPROM.
 	//Initialize the ranges of the Joints
 	Range_t ita;
-	Range_t jaa_ecs;
+	Range_t jaa_mcs;
 
 	//Finger1 - Joint1
 	ita.min = FINGER_1_JOINT_1_ITA_MIN_RAW;
 	ita.max = FINGER_1_JOINT_1_ITA_MAX_RAW;
 	ita.center = (ita.min + ita.max)/2;
-	jaa_ecs.min = FINGER_1_JOINT_1_JAA_MIN_ECS_DEG;
-	jaa_ecs.max = FINGER_1_JOINT_1_JAA_MAX_ECS_DEG;
-	jaa_ecs.center = wrap360(jaa_ecs.min + jaa_ecs.max)/2;
-	GL.right_hand.thumb_finger.joint1.update_ranges(ita, jaa_ecs);
+	jaa_mcs.min = FINGER_1_JOINT_1_JAA_MIN_MCS_DEG;
+	jaa_mcs.max = FINGER_1_JOINT_1_JAA_MAX_MCS_DEG;
+	jaa_mcs.center = (jaa_mcs.min + jaa_mcs.max)/2;
+	GL.right_hand.thumb_finger.joint1.update_ranges(ita, jaa_mcs);
 
 	//Finger2 - Joint2
 	ita.min = FINGER_1_JOINT_2_ITA_MIN_RAW;
 	ita.max = FINGER_1_JOINT_2_ITA_MAX_RAW;
 	ita.center = (ita.min + ita.max)/2;
-	jaa_ecs.min = FINGER_1_JOINT_2_JAA_MIN_ECS_DEG;
-	jaa_ecs.max = FINGER_1_JOINT_2_JAA_MAX_ECS_DEG;
-	jaa_ecs.center = wrap360(jaa_ecs.min + jaa_ecs.max)/2;
-	GL.right_hand.thumb_finger.joint2.update_ranges(ita, jaa_ecs);
+	jaa_mcs.min = FINGER_1_JOINT_2_JAA_MIN_MCS_DEG;
+	jaa_mcs.max = FINGER_1_JOINT_2_JAA_MAX_MCS_DEG;
+	jaa_mcs.center = wrap360(jaa_mcs.min + jaa_mcs.max)/2;
+	GL.right_hand.thumb_finger.joint2.update_ranges(ita, jaa_mcs);
 }
 
 void torques_off()

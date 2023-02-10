@@ -34,16 +34,16 @@ const int DXL_LIST[DXL_CNT] 		= {1, 2, 3, 4};
 //RANGES OF JOINTS
 //TEST BENCH 1 (MP Joint)
 //tb1 - jaa
-#define FINGER_1_JOINT_1_JAA_MIN_ECS_DEG		270
-#define FINGER_1_JOINT_1_JAA_MAX_ECS_DEG		20
+#define FINGER_1_JOINT_1_JAA_MIN_MCS_DEG		176
+#define FINGER_1_JOINT_1_JAA_MAX_MCS_DEG		109
 //tb1 - ita
 #define FINGER_1_JOINT_1_ITA_MIN_RAW			5907
 #define FINGER_1_JOINT_1_ITA_MAX_RAW			104
 ////////////////////////////////////////////////////////////////////////////
 //TEST BENCH 2 (PIP Joint)
 //tb2 - jaa
-#define FINGER_1_JOINT_2_JAA_MIN_ECS_DEG		270
-#define FINGER_1_JOINT_2_JAA_MAX_ECS_DEG		20
+#define FINGER_1_JOINT_2_JAA_MIN_MCS_DEG		150
+#define FINGER_1_JOINT_2_JAA_MAX_MCS_DEG		205
 //tb2 - ita
 #define FINGER_1_JOINT_2_ITA_MIN_RAW		    0
 #define FINGER_1_JOINT_2_ITA_MAX_RAW		    4393

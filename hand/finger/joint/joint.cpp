@@ -56,7 +56,6 @@ Joint::Joint(Joint_Settings_t joint_settings_t)
 
 bool Joint::init_devices()
 {
-	Serial.println("OK");
 	return true;
 }
 
@@ -102,19 +101,28 @@ uint8_t Joint::get_jaa_id()
 	return jaa_id;
 }
 
-void Joint::update_ranges(Range_t _ita, Range_t _jaa_ecs)
+void Joint::update_ranges(Range_t _ita, Range_t _jaa_mcs)
 {
 	ita.range.min 			= _ita.min;
 	ita.range.center 		= _ita.center;
 	ita.range.max 			= _ita.max;
 
-	jaa_ecs.range.min 		= _jaa_ecs.min;
-	jaa_ecs.range.center 	= _jaa_ecs.center;
-	jaa_ecs.range.max 		= _jaa_ecs.max;
+	jaa_mcs.range.min 		= _jaa_mcs.min;
+	jaa_mcs.range.center 	= _jaa_mcs.center;
+	jaa_mcs.range.max 		= _jaa_mcs.max;
 
-	jaa_mcs.range.min 		= ecs2mcs(jaa_ecs.range.min);
-	jaa_mcs.range.center 	= ecs2mcs(jaa_ecs.range.center);
-	jaa_mcs.range.max 		= ecs2mcs(jaa_ecs.range.max);
+	jaa_ecs.range.min 		= mcs2ecs(jaa_mcs.range.min);
+	jaa_ecs.range.center 	= ecs2mcs(jaa_mcs.range.center);
+	jaa_ecs.range.max 		= ecs2mcs(jaa_mcs.range.max);
+
+	if(jaa_mcs.range.min > jaa_mcs.range.max)
+	{
+		is_jaa_sign_positive = false;
+	}
+	else
+	{
+		is_jaa_sign_positive = true;
+	}
 }
 
 void Joint::joint_torques_2_internal_tensions_setpoints()

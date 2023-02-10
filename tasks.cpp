@@ -46,6 +46,23 @@ void task_send_comm_pack( void * parameter )
 	}
 }
 
+void task_read_comm( void * parameter )
+{
+	int freq 			=  5;
+
+    int period 	= (1000 / freq); long t_start = 0; long t_end = 0;
+	for (;;){t_start = millis();
+
+	//TASK CODE BELOW
+	read_Serial_port();
+	//TASK CODE ABOVE
+
+		t_end = millis();
+		if((t_end -t_start) > period && (t_end - t_start) > 0){} //Error
+		else { vTaskDelay(period - (t_end -t_start) / portTICK_PERIOD_MS); }
+	}
+}
+
 
 void task_loadcells_read( void * parameter )
 {
@@ -59,20 +76,13 @@ void task_loadcells_read( void * parameter )
 	result = read_sensors(1, 1);
 	GL.right_hand.thumb_finger.joint1.update_sensor_data(result[0], result[1]);
 
-	/*
 	result = read_sensors(1, 2);
-	Serial.println(result[0]);
-	Serial.println(result[1]);
-	Serial.println("--------------------");
-
 	GL.right_hand.thumb_finger.joint2.update_sensor_data(result[0], result[1]);
-	*/
-
 	//TASK CODE ABOVE
 
-		t_end = millis();
-		if((t_end -t_start) > period && (t_end - t_start) > 0){} //Error
-		else { vTaskDelay(period - (t_end -t_start) / portTICK_PERIOD_MS); }
+	t_end = millis();
+	if((t_end -t_start) > period && (t_end - t_start) > 0){} //Error
+	else { vTaskDelay(period - (t_end -t_start) / portTICK_PERIOD_MS); }
 	}
 }
 
