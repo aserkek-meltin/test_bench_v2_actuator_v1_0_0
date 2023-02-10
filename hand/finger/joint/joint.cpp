@@ -50,12 +50,16 @@ Joint::Joint(Joint_Settings_t joint_settings_t)
 	its_ma.begin();
 	gfs_ma.begin();
 
+	init_devices();
+
 	//Serial.println("Joint Constructor is called.");
 	//Serial.print ("Joint :");		Serial.println(joint_id);
 }
 
 bool Joint::init_devices()
 {
+	its_cal_factor = 1/-42.75;
+	gfs_cal_factor = 1/108.34;
 	return true;
 }
 
@@ -64,6 +68,7 @@ void Joint::loop()
 	//convert joint torques to ITs
 	joint_torques_2_internal_tensions_setpoints();
 	//try to keep ITs
+	calculate_it1_it2_estimateds();
 	it1_controller();
 	it2_controller();
 }
@@ -198,6 +203,16 @@ std::array<int,4> Joint::get_it2_pidf_coeff()
     return coeffs;
 }
 
+bool Joint::get_is_ita_calibrated()
+{
+	return is_ita_calibrated;
+}
+
+bool Joint::get_is_ita_sign_positive()
+{
+	return is_ita_sign_positive;
+}
+
 //SET FUNCTIONS ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Joint::update_ranges(Range_t _ita, Range_t _jaa_mcs)
@@ -223,6 +238,22 @@ void Joint::update_ranges(Range_t _ita, Range_t _jaa_mcs)
 		is_jaa_sign_positive = true;
 	}
 	raise_flag_to_send_update_pack();
+}
+
+void Joint::update_it1_pid_coefficients(float Kp, float Ki, float Kd, float Kf)
+{
+	it1_pid_settings_t.Kp = Kp;
+	it1_pid_settings_t.Ki = Ki;
+	it1_pid_settings_t.Kd = Kd;
+	it1_pid_settings_t.Kf = Kf;
+}
+
+void Joint::update_it2_pid_coefficients(float Kp, float Ki, float Kd, float Kf)
+{
+	it2_pid_settings_t.Kp = Kp;
+	it2_pid_settings_t.Ki = Ki;
+	it2_pid_settings_t.Kd = Kd;
+	it2_pid_settings_t.Kf = Kf;
 }
 
 // SET ANGLE COMMANDS SAFE /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,6 +292,32 @@ void Joint::ita_set_angle_readings(float pos)
 
 
 // UTILITY FUNCTIONS ////////////////////////////////////////////////////////////////////////////////////////////////
+void Joint::ita_calibrate()
+{
+	uint8_t sign = 0;
+
+	if (is_ita_sign_positive)
+	{
+		sign = 1;
+	}
+	else
+	{
+		sign = -1;
+	}
+
+	Range_t _ita;
+	Range_t _jaa_mcs;
+
+	_ita.min = ita.current;
+	_ita.max = ita.range.min + (4096 * sign);
+	_ita.center = (_ita.min + _ita.max)/2;
+
+	_jaa_mcs.min	= jaa_mcs.range.min;
+	_jaa_mcs.center = jaa_mcs.range.center;
+	_jaa_mcs.max	= jaa_mcs.range.max;
+
+	update_ranges(_ita, _jaa_mcs);
+}
 
 void Joint::joint_torques_2_internal_tensions_setpoints()
 {

@@ -16,7 +16,6 @@
 class Global {
 public:
 	Global();
-
 	//Objects
 	Hand							right_hand;
 	Dynamixel2Arduino 				dxl;

@@ -48,40 +48,102 @@ void apply_commands()
 
 void apply_settings()
 {
-	/*
+
 	switch(GL.sam_settings_pack_t.settings_id)
 	{
 		case(SAM_STG_ITA_CALIBRATE):
 		{
-
+			if(GL.sam_settings_pack_t.target_joint_id == 0)
+			{
+				GL.right_hand.thumb_finger.joint1.ita_calibrate();
+			}
+			else if(GL.sam_settings_pack_t.target_joint_id == 1)
+			{
+				GL.right_hand.thumb_finger.joint2.ita_calibrate();
+			}
 			break;
 		}
+		case(SAM_STG_ITA_POS_uM_SP):
+		{
+
+			if(GL.sam_settings_pack_t.target_joint_id == 0)
+			{
+				if(GL.right_hand.thumb_finger.joint1.get_is_ita_calibrated())
+				{
+					float mapped_mm = map(GL.sam_settings_pack_t.data, -7500, 7500, GL.right_hand.thumb_finger.joint1.get_ita_min(), GL.right_hand.thumb_finger.joint1.get_ita_max());
+					GL.right_hand.thumb_finger.joint1.ita_curr_command = mapped_mm;
+				}
+				else
+				{
+					GL.right_hand.thumb_finger.joint1.ita_curr_command = GL.right_hand.thumb_finger.joint1.get_ita_angle() + (GL.right_hand.thumb_finger.joint1.get_is_ita_sign_positive() * GL.sam_settings_pack_t.data * 4096 /15000);
+				}
+			}
+			else if(GL.sam_settings_pack_t.target_joint_id == 1)
+			{
+				if(GL.right_hand.thumb_finger.joint2.get_is_ita_calibrated())
+				{
+					float mapped_mm = map(GL.sam_settings_pack_t.data, -7500, 7500, GL.right_hand.thumb_finger.joint2.get_ita_min(), GL.right_hand.thumb_finger.joint2.get_ita_max());
+					GL.right_hand.thumb_finger.joint2.ita_curr_command = mapped_mm;
+				}
+				else
+				{
+					GL.right_hand.thumb_finger.joint2.ita_curr_command = GL.right_hand.thumb_finger.joint2.get_ita_angle() + (GL.right_hand.thumb_finger.joint2.get_is_ita_sign_positive() * GL.sam_settings_pack_t.data * 4096 /15000);
+				}
+			}
+			break;
+		}
+		/*
+		case(SAM_STG_JAA_POS_uDEG_SP):
+		{
+
+			if(GL.sam_settings_pack_t.target_joint_id == 0)
+			{
+				if(GL.right_hand.thumb_finger.joint1.get_is_ita_calibrated())
+				{
+					float mapped_mm = map(GL.sam_settings_pack_t.data, -7500, 7500, GL.right_hand.thumb_finger.joint1.get_ita_min(), GL.right_hand.thumb_finger.joint1.get_ita_max());
+					GL.right_hand.thumb_finger.joint1.ita_curr_command = mapped_mm;
+				}
+				else
+				{
+					GL.right_hand.thumb_finger.joint1.ita_curr_command = GL.right_hand.thumb_finger.joint1.get_ita_angle() + (GL.right_hand.thumb_finger.joint1.get_is_ita_sign_positive() * GL.sam_settings_pack_t.data * 4096 /15000);
+				}
+			}
+			else if(GL.sam_settings_pack_t.target_joint_id == 1)
+			{
+				if(GL.right_hand.thumb_finger.joint2.get_is_ita_calibrated())
+				{
+					float mapped_mm = map(GL.sam_settings_pack_t.data, -7500, 7500, GL.right_hand.thumb_finger.joint2.get_ita_min(), GL.right_hand.thumb_finger.joint2.get_ita_max());
+					GL.right_hand.thumb_finger.joint2.ita_curr_command = mapped_mm;
+				}
+				else
+				{
+					GL.right_hand.thumb_finger.joint2.ita_curr_command = GL.right_hand.thumb_finger.joint2.get_ita_angle() + (GL.right_hand.thumb_finger.joint2.get_is_ita_sign_positive() * GL.sam_settings_pack_t.data * 4096 /15000);
+				}
+			}
+			break;
+		}
+		*/
 		default:
 			break;
 	}
-	*/
 }
 
 void update_pid_coef()
 {
-	/*
-	if(GL.sam_pid_settings_pack_t.pid_id == IT_PID)
+	if(GL.sam_pid_settings_pack_t.controller_id == 0 && GL.sam_pid_settings_pack_t.target_hand_id == 0 && GL.sam_pid_settings_pack_t.target_finger_id == 0 && GL.sam_pid_settings_pack_t.target_joint_id == 0)
 	{
-		xSemaphoreTake(GL.smp_it_pid_settings, portMAX_DELAY);
-		GL.it_pid_settings_t.Kp = GL.sam_pid_settings_pack_t.kp;
-		GL.it_pid_settings_t.Ki = GL.sam_pid_settings_pack_t.ki;
-		GL.it_pid_settings_t.Kd = GL.sam_pid_settings_pack_t.kd;
-		GL.it_pid.SetTunings(GL.it_pid_settings_t.Kp, GL.it_pid_settings_t.Ki, GL.it_pid_settings_t.Kd);
-		xSemaphoreGive(GL.smp_it_pid_settings);
+		GL.right_hand.thumb_finger.joint1.update_it1_pid_coefficients(GL.sam_pid_settings_pack_t.kp, GL.sam_pid_settings_pack_t.ki, GL.sam_pid_settings_pack_t.kd, GL.sam_pid_settings_pack_t.kf);
 	}
-	*/
-}
-
-void update_ita_limits()
-{
-	/*
-	GL.ita_range_t.min = GL.sam_ita_limits_pack_t.ita_min;
-	GL.ita_range_t.max = GL.sam_ita_limits_pack_t.ita_max;
-	GL.ita_range_t.center = (GL.ita_range_t.min + GL.ita_range_t.max) / 2;
-	*/
+	else if(GL.sam_pid_settings_pack_t.controller_id == 0 && GL.sam_settings_pack_t.target_hand_id == 0 && GL.sam_settings_pack_t.target_finger_id == 0 && GL.sam_settings_pack_t.target_joint_id == 1)
+	{
+		GL.right_hand.thumb_finger.joint2.update_it2_pid_coefficients(GL.sam_pid_settings_pack_t.kp, GL.sam_pid_settings_pack_t.ki, GL.sam_pid_settings_pack_t.kd, GL.sam_pid_settings_pack_t.kf);
+	}
+	else if(GL.sam_pid_settings_pack_t.controller_id == 1 && GL.sam_pid_settings_pack_t.target_hand_id == 0 && GL.sam_pid_settings_pack_t.target_finger_id == 0 && GL.sam_pid_settings_pack_t.target_joint_id == 0)
+	{
+		GL.right_hand.thumb_finger.joint1.update_it1_pid_coefficients(GL.sam_pid_settings_pack_t.kp, GL.sam_pid_settings_pack_t.ki, GL.sam_pid_settings_pack_t.kd, GL.sam_pid_settings_pack_t.kf);
+	}
+	else if(GL.sam_pid_settings_pack_t.controller_id == 1 && GL.sam_settings_pack_t.target_hand_id == 0 && GL.sam_settings_pack_t.target_finger_id == 0 && GL.sam_settings_pack_t.target_joint_id == 1)
+	{
+		GL.right_hand.thumb_finger.joint2.update_it2_pid_coefficients(GL.sam_pid_settings_pack_t.kp, GL.sam_pid_settings_pack_t.ki, GL.sam_pid_settings_pack_t.kd, GL.sam_pid_settings_pack_t.kf);
+	}
 }

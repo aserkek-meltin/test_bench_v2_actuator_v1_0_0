@@ -74,7 +74,8 @@ void task_read_comm( void * parameter )
 	for (;;){t_start = millis();
 
 	//TASK CODE BELOW
-	read_Serial_port();
+	//TODO -Communication - Read from SAM PRO
+	//read_Serial_port();
 	//TASK CODE ABOVE
 
 		t_end = millis();
@@ -96,8 +97,8 @@ void task_loadcells_read( void * parameter )
 	result = read_sensors(1, 1);
 	GL.right_hand.thumb_finger.joint1.update_sensor_data(result[0], result[1]);
 
-	result = read_sensors(1, 2);
-	GL.right_hand.thumb_finger.joint2.update_sensor_data(result[0], result[1]);
+	//result = read_sensors(1, 2);
+	//GL.right_hand.thumb_finger.joint2.update_sensor_data(result[0], result[1]);
 	//TASK CODE ABOVE
 
 	t_end = millis();

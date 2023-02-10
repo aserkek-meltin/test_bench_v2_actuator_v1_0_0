@@ -63,6 +63,8 @@ public:
 	//PUBLIC FUNCTIONS--------------------------------------------------------------------------------------------------
 	bool 				init_devices();
 	void				set_joint_torque(float _joint_torque_setpoint);
+	void 				update_it1_pid_coefficients(float Kp, float Ki, float Kd, float Kf);
+	void  				update_it2_pid_coefficients(float Kp, float Ki, float Kd, float Kf);
 	uint8_t				get_ita_id();
 	uint8_t				get_jaa_id();
 	void				get_dynamixel_positions(std::array<float, 2> positions);
@@ -86,9 +88,12 @@ public:
 	float				get_ita_max();
 	std::array<int,4> 	get_it1_pidf_coeff();
 	std::array<int,4> 	get_it2_pidf_coeff();
+	bool				get_is_ita_calibrated();
+	bool				get_is_ita_sign_positive();
 	float				ecs2mcs(float ecs);
 	float				mcs2ecs(float mcs);
 	bool				is_controller_on();
+	void  				ita_calibrate();
 	void				loop();
 
 
@@ -125,6 +130,7 @@ private:
 
 	bool				is_ita_sign_positive;
 	bool				is_jaa_sign_positive;
+	bool				is_ita_calibrated;
 	float				jaa_zero;
 	float				ita_zero;
 
