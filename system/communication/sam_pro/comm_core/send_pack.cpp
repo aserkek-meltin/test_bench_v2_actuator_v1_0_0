@@ -29,7 +29,7 @@ void sam_pro_pack_send(const 	SAM_Pack_t * 	p_sam_pack_t,
 	tmp_u8[i++] = p_sam_pack_t->CRC_LSByte_u8;
 
 	xSemaphoreTake(GL.smp_sam_communication, portMAX_DELAY);
-	Serial.write(tmp_u8, 65);
+	Serial.write(tmp_u8, 65);									//TODO - Critic - Burayi arttirip bakalim
 	xSemaphoreGive(GL.smp_sam_communication);
 }
 /*
@@ -46,37 +46,9 @@ void send_status_pack()
 {
 	SAM_Pack_t 			pack_to_be_sent_t 	= {0};
 	Sam_Status_Pack_t 	status_pack_t		= {0};
+
+	//GLOBAL
 	status_pack_t.system_counter_s 	= GL.system_counter_s;
-/*
-	//TODO - Communication - Paketin icini dolduralim.
-
-	status_pack_t.errors			= errors;
-	status_pack_t.status			= status;
-
-	status_pack_t.ja 				= GL.ja_data_t.as5048a_data_raw_ecs;
-	status_pack_t.ja_setpoint		= GL.ja_pid_settings_t.pid_setpoint;
-
-	status_pack_t.it 				= GL.it_data_t.converted;
-	status_pack_t.it_setpoint		= GL.it_pid_settings_t.user_setpoint_SI;
-
-	status_pack_t.bwb				= GL.bwbs_data_t.ma;
-	status_pack_t.bending_estimation= GL.bending_angle_estimator_t.bending_angle_result;
-
-	status_pack_t.ftf				= GL.gfs_data_t.converted;	//GL.fingertip_force_estimator_t.ftf_model1;
-	status_pack_t.ftf_setpoint		= GL.ftf_pid_settings_t.user_setpoint_SI;
-
-	//status_pack_t.test_value1_f32 = GL.bending_angle_estimator_t.bending_angle_model1;
-	status_pack_t.test_value1_f32 = GL.jaa_ecs.curr_command;
-	status_pack_t.test_value2_f32 = GL.jaa_ecs.current;
-	status_pack_t.test_value3_f32 = GL.ftf_controller_t.it1_estimated_N;
-	status_pack_t.test_value4_f32 = GL.ftf_controller_t.it2_estimated_N;
-
-	status_pack_t.test_value5_u8 = GL.ftf_controller_t.it1_direction;
-	status_pack_t.test_value6_u8 = GL.ftf_controller_t.it2_direction;
-
-	GL.status_u.status_t.IT_PID_ON = GL.it_pid_settings_t.is_control_on;
-	GL.status_u.status_t.JA_PID_ON = GL.ja_pid_settings_t.is_control_on;
-*/
 
 	UINT8 errors = 	GL.errors_u.error_t.GFS_COULDNT_INITIALIZED 	<< 7 |
 			        GL.errors_u.error_t.ITS_COULDNT_INITIALIZED 	<< 6 |
@@ -97,36 +69,76 @@ void send_status_pack()
 			        GL.status_u.status_t.ACTUATOR_TORQUE					<< 1 |
 			        GL.status_u.status_t.BENDING_DIRECTION_BENDING		 		 ;
 
+	status_pack_t.errors			= errors;
+	status_pack_t.status			= status;
 
+	//CYCLE
+
+	switch(GL.status_pack_counter)
+	{
+		case STS_PACK_H1_F1_J1:
+		{
+			status_pack_t.joint_angle_est	= GL.right_hand.thumb_finger.joint1.get_ja_estimation();
+			status_pack_t.joint_jaa_angle	= GL.right_hand.thumb_finger.joint1.get_jaa_ecs_angle();
+			status_pack_t.joint_ita_mm 		= GL.right_hand.thumb_finger.joint1.get_ita_pos_mm();
+
+			status_pack_t.joint_it1_est		= GL.right_hand.thumb_finger.joint1.get_it1();
+			status_pack_t.joint_it1_sp		= GL.right_hand.thumb_finger.joint1.get_it1_setpoint();
+
+			status_pack_t.joint_it2_est		= GL.right_hand.thumb_finger.joint1.get_it2();
+			status_pack_t.joint_it2_sp		= GL.right_hand.thumb_finger.joint1.get_it2_setpoint();
+
+			status_pack_t.test_value0_f32	= 7;
+			status_pack_t.test_value1_f32 	= 8;
+			status_pack_t.test_value2_f32 	= 9;
+			status_pack_t.test_value3_f32 	= 10;
+			status_pack_t.test_value4_f32 	= 11;
+
+			status_pack_t.finger_id 		= GL.right_hand.thumb_finger.finger_id;
+			status_pack_t.joint_id 			= GL.right_hand.thumb_finger.joint1.joint_id;
+			break;
+		}
+		case STS_PACK_H1_F1_J2:
+		{
+			status_pack_t.joint_angle_est	= GL.right_hand.thumb_finger.joint2.get_ja_estimation();
+			status_pack_t.joint_jaa_angle	= GL.right_hand.thumb_finger.joint2.get_jaa_ecs_angle();
+			status_pack_t.joint_ita_mm 		= GL.right_hand.thumb_finger.joint2.get_ita_pos_mm();
+
+			status_pack_t.joint_it1_est		= GL.right_hand.thumb_finger.joint2.get_it1();
+			status_pack_t.joint_it1_sp		= GL.right_hand.thumb_finger.joint2.get_it1_setpoint();
+
+			status_pack_t.joint_it2_est		= GL.right_hand.thumb_finger.joint2.get_it2();
+			status_pack_t.joint_it2_sp		= GL.right_hand.thumb_finger.joint2.get_it2_setpoint();
+
+			status_pack_t.test_value0_f32	= 7;
+			status_pack_t.test_value1_f32 	= 8;
+			status_pack_t.test_value2_f32 	= 9;
+			status_pack_t.test_value3_f32 	= 10;
+			status_pack_t.test_value4_f32 	= 11;
+
+			status_pack_t.finger_id 		= GL.right_hand.thumb_finger.finger_id;
+			status_pack_t.joint_id 			= GL.right_hand.thumb_finger.joint2.joint_id;
+			break;
+		}
+	  default:
+	    break;
+	}
 	create_sam_status_pack(&pack_to_be_sent_t, &status_pack_t);
 	Pack_It_SAM(&pack_to_be_sent_t);
 	sam_pro_pack_send(&pack_to_be_sent_t, 1);
+	GL.status_pack_counter++;
+	if(GL.status_pack_counter>1)
+	{
+		GL.status_pack_counter = 0;
+	}
 }
 
-void send_test_pack()
+void send_update_pack()
 {
 	SAM_Pack_t 			pack_to_be_sent_t 	= {0};
-	Sam_Test_Pack_t 	test_pack_t			= {0};
-/*
-	//TODO - Communication - Paketin icini dolduralim.
-	test_pack_t.test_value1_u32 = GL.system_counter_s; //GL.sam_test_pack_t.test_value1_u32;
+	Sam_Update_Pack_t 	update_pack_t		= {0};
 
-	test_pack_t.test_bits1			= test_bits1;
-	test_pack_t.test_bits2			= test_bits2;
-
-	test_pack_t.test_value1_f32 	= GL.ita_range_t.min;
-	test_pack_t.test_value2_f32 	= GL.ita_range_t.max;
-	test_pack_t.test_value3_f32 	= GL.it_data_t.zero;
-	test_pack_t.test_value4_f32 	= GL.it_pid_settings_t.pid_setpoint;
-	test_pack_t.test_value5_f32 	= GL.bending_angle_estimator_t.bending_angle_zero;
-	test_pack_t.test_value6_f32 	= GL.ita.prev_command; //GL.sam_test_pack_t.test_value6_f32; //GL.bending_angle_estimator_t.bending_angle_model1;
-	test_pack_t.test_value7_f32 	= GL.jaa_mcs.prev_command; //GL.sam_test_pack_t.test_value7_f32; //GL.bending_angle_estimator_t.bending_angle_model2;
-	test_pack_t.test_value8_f32 	= GL.gfs_data_t.ma;
-	test_pack_t.test_value9_f32 	= GL.ja_pid_wff_settings_t.input;				//GL.ftf_controller_t.it1_compensated_N;
-	test_pack_t.test_value10_f32 	= GL.ja_pid_wff_settings_t.user_setpoint_SI;	//GL.ftf_controller_t.it2_compensated_N;
-	test_pack_t.test_value11_f32 	= GL.ja_pid_wff_settings_t.pid_setpoint;		//GL.ftf_controller_t.it1_out_desired_N;
-	test_pack_t.test_value12_f32 	= GL.ja_pid_wff_settings_t.output;				//GL.ftf_controller_t.it2_out_desired_N;
-*/
+	//GLOBAL
 	UINT8 test_bits1 = 	GL.test_bit1_u.test_bit_t.TEST_BIT_1			 << 7 |
 			        	GL.test_bit1_u.test_bit_t.TEST_BIT_2             << 6 |
 						GL.test_bit1_u.test_bit_t.TEST_BIT_3             << 5 |
@@ -146,33 +158,120 @@ void send_test_pack()
 						GL.test_bit2_u.test_bit_t.TEST_BIT_8             	  ;
 
 
-	test_pack_t.test_value1_u8 		= GL.sam_test_pack_t.test_value1_u8;
-	test_pack_t.test_value2_u8 		= GL.sam_test_pack_t.test_value2_u8;;
+	update_pack_t.test_value1_u32 		= GL.system_counter_s; //GL.sam_test_pack_t.test_value1_u32;
+	update_pack_t.test_bits1			= test_bits1;
+	update_pack_t.test_bits2			= test_bits2;
 
-	create_sam_test_pack(&pack_to_be_sent_t, &test_pack_t);
-	Pack_It_SAM(&pack_to_be_sent_t);
-	sam_pro_pack_send(&pack_to_be_sent_t, 1);
+	//CYCLE
+	switch(GL.update_pack_counter)
+	{
+		case STS_PACK_H1_F1_J1:
+		{
+
+			update_pack_t.joint_jaa_min			= GL.right_hand.thumb_finger.joint1.get_jaa_min();
+			update_pack_t.joint_jaa_max			= GL.right_hand.thumb_finger.joint1.get_jaa_max();
+			update_pack_t.joint_ita_min			= GL.right_hand.thumb_finger.joint1.get_ita_min();
+			update_pack_t.joint_ita_max			= GL.right_hand.thumb_finger.joint1.get_ita_max();
+			update_pack_t.joint_torque_sp		= GL.right_hand.thumb_finger.joint1.get_joint_torque_setpoint();
+			update_pack_t.test_value6_f32		= 0;
+			update_pack_t.test_value7_f32		= 0;
+			update_pack_t.test_value8_f32		= 0;
+			update_pack_t.test_value9_f32		= 0;
+			update_pack_t.test_value10_f32 		= 0;
+			update_pack_t.test_value11_f32 		= 0;
+			update_pack_t.test_value12_f32 		= 0;
+
+			update_pack_t.finger_id 			= GL.right_hand.thumb_finger.finger_id;
+			update_pack_t.joint_id 				= GL.right_hand.thumb_finger.joint1.joint_id;
+			break;
+		}
+		case STS_PACK_H1_F1_J2:
+		{
+			update_pack_t.joint_jaa_min			= GL.right_hand.thumb_finger.joint2.get_jaa_min();
+			update_pack_t.joint_jaa_max			= GL.right_hand.thumb_finger.joint2.get_jaa_max();
+			update_pack_t.joint_ita_min			= GL.right_hand.thumb_finger.joint2.get_ita_min();
+			update_pack_t.joint_ita_max			= GL.right_hand.thumb_finger.joint2.get_ita_max();
+			update_pack_t.joint_torque_sp		= GL.right_hand.thumb_finger.joint2.get_joint_torque_setpoint();
+			update_pack_t.test_value6_f32		= 0;
+			update_pack_t.test_value7_f32		= 0;
+			update_pack_t.test_value8_f32		= 0;
+			update_pack_t.test_value9_f32		= 0;
+			update_pack_t.test_value10_f32 		= 0;
+			update_pack_t.test_value11_f32 		= 0;
+			update_pack_t.test_value12_f32 		= 0;
+
+			update_pack_t.finger_id 			= GL.right_hand.thumb_finger.finger_id;
+			update_pack_t.joint_id 				= GL.right_hand.thumb_finger.joint1.joint_id;
+			break;
+		}
+		default:
+			break;
+	}
+
+	//TODO - Communication - Paketin icini dolduralim.
+
+	create_sam_update_pack	(&pack_to_be_sent_t, &update_pack_t);
+	Pack_It_SAM				(&pack_to_be_sent_t);
+	sam_pro_pack_send		(&pack_to_be_sent_t, 1);
+	GL.update_pack_counter++;
+	if(GL.update_pack_counter>1)
+	{
+		GL.update_pack_counter = 0;
+		GL.is_uptade_needed = false;
+	}
 }
 
-void send_pid_coeff_pack(UINT8 _pid_id)
+void send_pid_coeff_pack(Sam_PID_Settings_Pack_t sam_pid_settings_pack_t)
 {
 	SAM_Pack_t 					pack_to_be_sent_t 	= {0};
 	Sam_PID_Settings_Pack_t		pid_settings_pack_t	= {0};
 
-	pid_settings_pack_t.pid_id		= _pid_id;
+	pid_settings_pack_t.controller_id		= sam_pid_settings_pack_t.controller_id;
+	pid_settings_pack_t.target_hand_id		= sam_pid_settings_pack_t.target_hand_id;
+	pid_settings_pack_t.target_finger_id	= sam_pid_settings_pack_t.target_finger_id;
+	pid_settings_pack_t.target_joint_id		= sam_pid_settings_pack_t.target_joint_id;
+
+	if( pid_settings_pack_t.target_hand_id == 0 && pid_settings_pack_t.target_finger_id == 0 && pid_settings_pack_t.target_joint_id == 0 && pid_settings_pack_t.controller_id == IT1_PID )
+	{
+		std::array<int,4> coeffs;
+		coeffs = GL.right_hand.thumb_finger.joint1.get_it1_pidf_coeff();
+
+		pid_settings_pack_t.kp			= coeffs[0];
+		pid_settings_pack_t.ki			= coeffs[1];
+		pid_settings_pack_t.kd			= coeffs[2];
+		pid_settings_pack_t.kf			= coeffs[3];
+	}
+	else if(pid_settings_pack_t.target_hand_id == 0 && pid_settings_pack_t.target_finger_id == 0 && pid_settings_pack_t.target_joint_id == 0 && pid_settings_pack_t.controller_id == IT2_PID )
+	{
+		std::array<int,4> coeffs;
+		coeffs = GL.right_hand.thumb_finger.joint1.get_it2_pidf_coeff();
+
+		pid_settings_pack_t.kp			= coeffs[0];
+		pid_settings_pack_t.ki			= coeffs[1];
+		pid_settings_pack_t.kd			= coeffs[2];
+		pid_settings_pack_t.kf			= coeffs[3];
+	}
+	else if( pid_settings_pack_t.target_hand_id == 0 && pid_settings_pack_t.target_finger_id == 0 && pid_settings_pack_t.target_joint_id == 1 && pid_settings_pack_t.controller_id == IT1_PID )
+	{
+		std::array<int,4> coeffs;
+		coeffs = GL.right_hand.thumb_finger.joint2.get_it1_pidf_coeff();
+
+		pid_settings_pack_t.kp			= coeffs[0];
+		pid_settings_pack_t.ki			= coeffs[1];
+		pid_settings_pack_t.kd			= coeffs[2];
+		pid_settings_pack_t.kf			= coeffs[3];
+	}
+	else if(pid_settings_pack_t.target_hand_id == 0 && pid_settings_pack_t.target_finger_id == 0 && pid_settings_pack_t.target_joint_id == 1 && pid_settings_pack_t.controller_id == IT2_PID )
+	{
+		std::array<int,4> coeffs;
+		coeffs = GL.right_hand.thumb_finger.joint2.get_it2_pidf_coeff();
+
+		pid_settings_pack_t.kp			= coeffs[0];
+		pid_settings_pack_t.ki			= coeffs[1];
+		pid_settings_pack_t.kd			= coeffs[2];
+		pid_settings_pack_t.kf			= coeffs[3];
+	}
 /*
-	if(_pid_id == IT_PID)
-	{
-		pid_settings_pack_t.kp			= GL.it_pid_settings_t.Kp;
-		pid_settings_pack_t.ki			= GL.it_pid_settings_t.Ki;
-		pid_settings_pack_t.kd			= GL.it_pid_settings_t.Kd;
-	}
-	else if(_pid_id == JA_PID)
-	{
-		pid_settings_pack_t.kp			= GL.ja_pid_settings_t.Kp;
-		pid_settings_pack_t.ki			= GL.ja_pid_settings_t.Ki;
-		pid_settings_pack_t.kd			= GL.ja_pid_settings_t.Kd;
-	}
 	else if(_pid_id == IT1_PID)
 	{
 		pid_settings_pack_t.kp			= GL.it1_pid_settings_t.Kp;
@@ -192,25 +291,12 @@ void send_pid_coeff_pack(UINT8 _pid_id)
 		pid_settings_pack_t.kd			= GL.ja_pid_wff_settings_t.Kd;
 		pid_settings_pack_t.kf			= GL.ja_pid_wff_settings_t.Kf;
 	}
-*/
 
 	create_sam_pid_settings_pack(&pack_to_be_sent_t, &pid_settings_pack_t);
+	*/
 	Pack_It_SAM(&pack_to_be_sent_t);
 	sam_pro_pack_send(&pack_to_be_sent_t, 1);
 }
 
-void send_ita_limits_pack()
-{
-	SAM_Pack_t 					pack_to_be_sent_t 	= {0};
-	Sam_ITA_Limits_Pack_t		sam_ita_limits_pack = {0};
-	Sam_PID_Settings_Pack_t		pid_settings_pack_t	= {0};
-/*
-	sam_ita_limits_pack.ita_min = GL.ita_range_t.min;
-	sam_ita_limits_pack.ita_max = GL.ita_range_t.max;
-	sam_ita_limits_pack.ita_current = GL.ita.current;
-*/
-	create_sam_ita_limits_pack(&pack_to_be_sent_t, &sam_ita_limits_pack);
-	Pack_It_SAM(&pack_to_be_sent_t);
-	sam_pro_pack_send(&pack_to_be_sent_t, 1);
-}
+
 

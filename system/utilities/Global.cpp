@@ -159,3 +159,8 @@ void read_Serial_port()
 		}
 	}
 }
+
+void raise_flag_to_send_update_pack()
+{
+	GL.is_uptade_needed = true;
+}

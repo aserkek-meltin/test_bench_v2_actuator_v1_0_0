@@ -32,17 +32,6 @@ void solve_pack(const SAM_Pack_t *p_incoming_sam_t)
 			solve_sam_pid_settings_pack(p_incoming_sam_t, &GL.sam_pid_settings_pack_t);
 			break;
 		}
-		case PACK_GFS_LUT_SETTING:
-		{
-			//solve_sam_gfs_lut_settings_pack(p_incoming_sam_t, &GL.sam_gfs_lut_settings_pack_t);
-			break;
-		}
-		case ITA_LIMITS_PACK:
-		{
-			solve_sam_ita_limits_pack(p_incoming_sam_t, &GL.sam_ita_limits_pack_t);
-			break;
-		}
-
 	default:
 		break;
 	}

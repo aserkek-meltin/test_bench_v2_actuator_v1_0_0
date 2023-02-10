@@ -72,7 +72,20 @@ public:
 	void 				ita_set_angle_readings(float pos);
 	float 				get_jaa_mcs_angle();
 	float 				get_jaa_ecs_angle();
+	float				get_ja_estimation();
+	float				get_it1();
+	float				get_it2();
+	float				get_joint_torque_setpoint();
+	float				get_it1_setpoint();
+	float				get_it2_setpoint();
+	float				get_ita_pos_mm();
 	float 				get_ita_angle();
+	float				get_jaa_min();
+	float				get_jaa_max();
+	float				get_ita_min();
+	float				get_ita_max();
+	std::array<int,4> 	get_it1_pidf_coeff();
+	std::array<int,4> 	get_it2_pidf_coeff();
 	float				ecs2mcs(float ecs);
 	float				mcs2ecs(float mcs);
 	bool				is_controller_on();
@@ -92,6 +105,7 @@ private:
 
 	Data_t				its;
 	Data_t				gfs;
+	Data_t				ja;
 
 
 	PID_Settings_t		it1_pid_settings_t;

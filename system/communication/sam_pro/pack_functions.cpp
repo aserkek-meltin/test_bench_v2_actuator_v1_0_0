@@ -31,6 +31,16 @@ void apply_commands()
 				GL.status_u.status_t.ACTUATOR_TORQUE = true;
 				break;
 			}
+			case(SAM_CMD_BWBS_CALIBRATE):
+			{
+				//TODO - BWBS calibrate
+					break;
+			}
+			case(SAM_CMD_SENSORS_CALIBRATE):
+			{
+				//TODO - Sensors calibrate
+					break;
+			}
 			default:
 				break;
 		}
@@ -38,16 +48,18 @@ void apply_commands()
 
 void apply_settings()
 {
+	/*
 	switch(GL.sam_settings_pack_t.settings_id)
 	{
-		case(SAM_STG_IT_SETPOINT):
+		case(SAM_STG_ITA_CALIBRATE):
 		{
-			//GL.it_pid_settings_t.user_setpoint_SI = GL.sam_settings_pack_t.data;
+
 			break;
 		}
 		default:
 			break;
 	}
+	*/
 }
 
 void update_pid_coef()

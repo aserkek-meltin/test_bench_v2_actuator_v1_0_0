@@ -68,9 +68,11 @@ void Joint::loop()
 	it2_controller();
 }
 
+
 void Joint::set_joint_torque(float _joint_torque_setpoint)
 {
 	_joint_torque_setpoint = joint_torque_setpoint;
+	raise_flag_to_send_update_pack();
 }
 
 void Joint::update_sensor_data(float _its, float _gfs)
@@ -90,6 +92,20 @@ void Joint::calculate_it1_it2_estimateds()
 	it2_estimated = (its.converted + (gfs.converted * GFS_TO_IT_CALCULATION_FACTOR) ) / -2;
 	it1_estimated = (its.converted + it2_estimated) * -1;
 }
+//GET FUNCTIONS ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float Joint::get_it1()
+{
+	return it1_estimated;
+}
+
+float Joint::get_it2()
+{
+	return it2_estimated;
+}
+float Joint::get_joint_torque_setpoint()
+{
+	return joint_torque_setpoint;
+}
 
 uint8_t Joint::get_ita_id()
 {
@@ -100,6 +116,89 @@ uint8_t Joint::get_jaa_id()
 {
 	return jaa_id;
 }
+
+float Joint::get_jaa_mcs_angle()
+{
+	return jaa_mcs.current;
+}
+
+float Joint::get_jaa_ecs_angle()
+{
+	//returns the current jaa angle in ecs
+	return jaa_ecs.current;
+}
+
+float Joint::get_ita_angle()
+{
+	//returns the current ita pos in raw
+	return ita.current;
+}
+
+float Joint::get_it1_setpoint()
+{
+	return it1_setpoint;
+}
+
+float Joint::get_it2_setpoint()
+{
+	return it2_setpoint;
+}
+
+float Joint::get_ita_pos_mm()
+{
+	return map(ita.current, ita.range.min, ita.range.max, -7.5, +7.5);
+}
+
+float Joint::get_ja_estimation()
+{
+	//TODO - JA ESTIMATION write
+	return 0;
+}
+
+float Joint::get_jaa_min()
+{
+	return jaa_ecs.range.min;
+}
+
+float Joint::get_jaa_max()
+{
+	return jaa_ecs.range.max;
+}
+float Joint::get_ita_min()
+{
+	return ita.range.min;
+}
+
+float Joint::get_ita_max()
+{
+	return ita.range.max;
+}
+
+std::array<int,4> Joint::get_it1_pidf_coeff()
+{
+    std::array<int,4> coeffs;
+
+    coeffs[0] = it1_pid_settings_t.Kp;
+    coeffs[1] = it1_pid_settings_t.Ki;
+    coeffs[2] = it1_pid_settings_t.Kd;
+    coeffs[3] = it1_pid_settings_t.Kf;
+
+    return coeffs;
+}
+
+std::array<int,4> Joint::get_it2_pidf_coeff()
+{
+    std::array<int,4> coeffs;
+
+    coeffs[0] = it2_pid_settings_t.Kp;
+    coeffs[1] = it2_pid_settings_t.Ki;
+    coeffs[2] = it2_pid_settings_t.Kd;
+    coeffs[3] = it2_pid_settings_t.Kf;
+
+    return coeffs;
+}
+
+//SET FUNCTIONS ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Joint::update_ranges(Range_t _ita, Range_t _jaa_mcs)
 {
@@ -123,7 +222,45 @@ void Joint::update_ranges(Range_t _ita, Range_t _jaa_mcs)
 	{
 		is_jaa_sign_positive = true;
 	}
+	raise_flag_to_send_update_pack();
 }
+
+// SET ANGLE COMMANDS SAFE /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void Joint::jaa_set_ecs_angle_command(float ecs)
+{
+	jaa_ecs.prev_command = jaa_ecs.curr_command;
+	jaa_ecs.curr_command	= jaa_check_range_ecs(ecs);
+
+	jaa_mcs.curr_command = ecs2mcs(jaa_ecs.curr_command);
+	jaa_mcs.prev_command = ecs2mcs(jaa_ecs.prev_command);
+}
+
+void Joint::ita_set_pos_command(float pos)
+{
+	ita.prev_command = ita.curr_command;
+	ita.curr_command = ita_check_range(pos);
+}
+
+
+// SET ANGLE READINGS SAFE /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//This functions are for arranging the actuator angle data that is read from the dynamixel syncread.
+void Joint::jaa_set_mcs_angle_readings(float mcs)
+{
+	jaa_ecs.previous = jaa_ecs.current;
+	jaa_ecs.current	 = mcs2ecs(mcs);
+
+	jaa_mcs.previous = ecs2mcs(jaa_ecs.previous);
+	jaa_mcs.current  = ecs2mcs(jaa_ecs.current);
+}
+
+void Joint::ita_set_angle_readings(float pos)
+{
+	ita.previous = ita.current;
+	ita.current	 = pos;
+}
+
+
+// UTILITY FUNCTIONS ////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Joint::joint_torques_2_internal_tensions_setpoints()
 {
@@ -255,56 +392,6 @@ float Joint::jaa_check_range_ecs(float angle_ecs)
 	}
 }
 
-// SET ANGLE COMMANDS SAFE /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void Joint::jaa_set_ecs_angle_command(float ecs)
-{
-	jaa_ecs.prev_command = jaa_ecs.curr_command;
-	jaa_ecs.curr_command	= jaa_check_range_ecs(ecs);
-
-	jaa_mcs.curr_command = ecs2mcs(jaa_ecs.curr_command);
-	jaa_mcs.prev_command = ecs2mcs(jaa_ecs.prev_command);
-}
-
-void Joint::ita_set_pos_command(float pos)
-{
-	ita.prev_command = ita.curr_command;
-	ita.curr_command = ita_check_range(pos);
-}
-
-
-// SET ANGLE READINGS SAFE /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//This functions are for arranging the actuator angle data that is read from the dynamixel syncread.
-void Joint::jaa_set_mcs_angle_readings(float mcs)
-{
-	jaa_ecs.previous = jaa_ecs.current;
-	jaa_ecs.current	 = mcs2ecs(mcs);
-
-	jaa_mcs.previous = ecs2mcs(jaa_ecs.previous);
-	jaa_mcs.current  = ecs2mcs(jaa_ecs.current);
-}
-
-void Joint::ita_set_angle_readings(float pos)
-{
-	ita.previous = ita.current;
-	ita.current	 = pos;
-}
-
-// GET CURRENT DYNAMIXEL ANGLEs /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-float Joint::get_jaa_mcs_angle()
-{
-	return jaa_mcs.current;
-}
-
-float Joint::get_jaa_ecs_angle()
-{
-	return jaa_ecs.current;
-}
-
-float Joint::get_ita_angle()
-{
-	return ita.current;
-}
 
 
 // PID OUT TO ACTUATOR COMMAND WITH RANGE CHECK ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

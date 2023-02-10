@@ -12,7 +12,8 @@
 #include "../test_bench_v2_actuator_v1_0_0/system/utilities/loadcell_reader.h"
 
 void task_system				( void * parameter );
-void task_send_comm_pack		( void * parameter );
+void task_send_status_pack		( void * parameter );
+void task_send_update_pack		( void * parameter );
 void task_read_comm				( void * parameter );
 void task_loadcells_read		( void * parameter );
 void task_right_hand			( void * parameter );

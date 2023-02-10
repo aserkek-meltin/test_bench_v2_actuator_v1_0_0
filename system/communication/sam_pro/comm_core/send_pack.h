@@ -19,8 +19,7 @@ void sam_pro_pack_send(const 	SAM_Pack_t * 	p_sam_pack_t,
 								UINT32			bus);
 
 void send_status_pack();
-void send_test_pack();
-void send_pid_coeff_pack(UINT8 _pid_id);
-void send_ita_limits_pack();
+void send_update_pack();
+void send_pid_coeff_pack(Sam_PID_Settings_Pack_t sam_pid_settings_pack_t);
 
 #endif /* TEST_BENCH_ACTUATOR_COMMUNICATION_SEND_PACK_H_ */

@@ -16,14 +16,11 @@
 void create_sam_status_pack(		SAM_Pack_t			*p_sam_pack_t,
 							const 	Sam_Status_Pack_t 	*sam_status_pack_t);
 
-void create_sam_test_pack(			SAM_Pack_t			*p_sam_pack_t,
-							const 	Sam_Test_Pack_t 	*sam_test_pack_t);
+void create_sam_update_pack(			SAM_Pack_t			*p_sam_pack_t,
+							const 	Sam_Update_Pack_t 	*sam_update_pack_t);
 
 void create_sam_pid_settings_pack(		SAM_Pack_t					*p_sam_pack_t,
 								const 	Sam_PID_Settings_Pack_t 	*sam_pid_settings_pack_t);
-
-void create_sam_ita_limits_pack (		SAM_Pack_t					*p_sam_pack_t,
-								const 	Sam_ITA_Limits_Pack_t 		*sam_ita_limits_pack);
 
 
 #endif /* TEST_BENCH_ACTUATOR_COMMUNICATION_CREATE_PACK_H_ */

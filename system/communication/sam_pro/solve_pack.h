@@ -22,11 +22,6 @@ void solve_sam_settings_pack( const 	SAM_Pack_t			*p_sam_pack_t,
 void solve_sam_pid_settings_pack( const 	SAM_Pack_t			*p_sam_pack_t,
 									Sam_PID_Settings_Pack_t	*sam_pid_settings_pack_t);
 
-void solve_sam_gfs_lut_settings_pack( const 	SAM_Pack_t			*p_sam_pack_t,
-									Sam_LUT_Setting_Pack_t *sam_lut_setting_pack_t);
-
-void solve_sam_ita_limits_pack( const 	SAM_Pack_t			*p_sam_pack_t,
-									Sam_ITA_Limits_Pack_t *sam_ita_limits_pack_t);
 
 
 #endif /* TEST_BENCH_ACTUATOR_COMMUNICATION_SOLVE_PACK_H_ */

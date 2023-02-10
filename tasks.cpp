@@ -29,7 +29,7 @@ void task_system( void * parameter )
 	}
 }
 
-void task_send_comm_pack( void * parameter )
+void task_send_status_pack( void * parameter )
 {
 	int freq 			=  5;
 
@@ -37,7 +37,27 @@ void task_send_comm_pack( void * parameter )
 	for (;;){t_start = millis();
 
 	//TASK CODE BELOW
-	//send_status_pack();
+	send_status_pack();
+	//TASK CODE ABOVE
+
+		t_end = millis();
+		if((t_end -t_start) > period && (t_end - t_start) > 0){} //Error
+		else { vTaskDelay(period - (t_end -t_start) / portTICK_PERIOD_MS); }
+	}
+}
+
+void task_send_update_pack( void * parameter )
+{
+	int freq 			=  5;
+
+    int period 	= (1000 / freq); long t_start = 0; long t_end = 0;
+	for (;;){t_start = millis();
+
+	//TASK CODE BELOW
+	if(GL.is_uptade_needed)
+	{
+		send_update_pack();
+	}
 	//TASK CODE ABOVE
 
 		t_end = millis();

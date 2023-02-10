@@ -94,12 +94,12 @@ void ranges_initialization()
 
 void torques_off()
 {
-
+	//TODO - Motor - Write torques off
 }
 
 void torques_on()
 {
-
+	//TODO - Motor - Write torques on
 }
 
 
