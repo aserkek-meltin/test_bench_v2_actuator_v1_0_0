@@ -9,55 +9,70 @@
 #include "../system_settings.h"
 
 
+
+#define NUMBER_OF_LOADCELLS	4
+
+QWIICMUX i2c_mux;
+NAU7802	**loadcells;
 TwoWire I2C1 = TwoWire(0); 						//I2C1 bus
-TwoWire I2C2 = TwoWire(1); 						//I2C2 bus
-/*
-NAU7802	its_loadcell	[NUMBER_OF_FINGERS]	[NUMBER_OF_TB];
-NAU7802	gfs_loadcell	[NUMBER_OF_FINGERS]	[NUMBER_OF_TB];
-*/
-NAU7802 j1_its_loadcell;
-NAU7802 j1_gfs_loadcell;
-//NAU7802 j2_its_loadcell;
-//NAU7802 j2_gfs_loadcell;
 
 bool init_loadcells()
 {
-	I2C1.begin(I2C1_SDA_PIN, I2C1_SCL_PIN, 100000); // Start I2C1 on pins 21 and 22
-	I2C2.begin(I2C2_SDA_PIN, I2C2_SCL_PIN, 100000); // Start I2C2 on pins 0 and 23
+	bool couldnt_initialized = false;
 
-	//Initialization of the loadcells
-	bool is_initialized = true;
-	/*
-	for(int i=0; i<NUMBER_OF_FINGERS; i++)
+	I2C1.begin(I2C1_SDA_PIN, I2C1_SCL_PIN, 100000); 	// AI2C
+	loadcells = new NAU7802 *[NUMBER_OF_LOADCELLS];		// Create set of pointers to the class
+
+	//Assign pointers to instances of the class
+	for (int x = 0; x < NUMBER_OF_LOADCELLS; x++)
 	{
-		for(int j=0; j<NUMBER_OF_TB; j++)
+		loadcells[x] = new NAU7802();
+	}
+
+	if (i2c_mux.begin(0x70, I2C1) == false)
+	{
+		//ERROR
+		while (1);
+	}
+	//Serial.println("Mux detected");
+
+	byte currentPortNumber = i2c_mux.getPort();
+	//Serial.print("CurrentPort: ");
+	//Serial.println(currentPortNumber);
+
+	//Initialize all the sensors
+	bool initSuccess = true;
+
+	for (byte x = 0; x < NUMBER_OF_LOADCELLS; x++)
+	{
+		i2c_mux.setPort(x);
+		if (loadcells[x]->begin(I2C1) == 0) //Begin returns 0 on a good init
 		{
-			is_initialized = is_initialized & its_loadcell[0][i].begin(I2C1);
-			is_initialized = is_initialized & gfs_loadcell[0][i].begin(I2C2);
+			//Serial.print("Sensor ");
+			//Serial.print(x);
+			//Serial.println(" did not begin! Check wiring");
+			initSuccess = false;
 		}
-	}
-*/
-	j1_gfs_loadcell.begin(I2C1);
-	j1_its_loadcell.begin(I2C2);
-
-	if (is_initialized)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
+		else
+		{
+			//Configure each sensor
+			//Serial.print("Sensor ");
+			//Serial.print(x);
+			//Serial.println(" configured");
+		}
 	}
 }
 
-std::array<float, 2> read_sensors(uint8_t finger_id, uint8_t joint_id)
+std::array<float, 2> read_sensors(uint8_t hand_id, uint8_t finger_id, uint8_t joint_id)
 {
+	uint8_t its_address = (hand_id * 40) + (finger_id * 8) + (joint_id * 2);
+	uint8_t gfs_address = its_address + 1;
 	std::array<float,2> result; //array declared
-/*
-	result[0] = its_loadcell[finger_id][joint_id].getReading();
-	result[1] = gfs_loadcell[finger_id][joint_id].getReading();
-*/
-	result[0] = j1_its_loadcell.getReading();
-	result[1] = j1_gfs_loadcell.getReading();
+
+	i2c_mux.setPort(its_address);
+	result[0] = loadcells[its_address]->getReading();
+	vTaskDelay(1 /portTICK_PERIOD_MS);		//5ms delay
+	i2c_mux.setPort(gfs_address);
+	result[1] = loadcells[gfs_address]->getReading();
 	return result;
 }

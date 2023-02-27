@@ -10,7 +10,7 @@
 
 #include "../../hand/hand.h"
 #include <Dynamixel2Arduino.h>
-#include "HardwareSerial.h"
+
 #include "../communication/sam_pro/comm_packs.h"
 
 class Global {
@@ -19,6 +19,10 @@ public:
 	//Objects
 	Hand							right_hand;
 	Dynamixel2Arduino 				dxl;
+
+	//TODO - DELETE
+	HardwareSerial 					fm_UARTPort; 					// use UART1
+	Communication_pack_t			communication_pack_t;	//This struct is for to contain whatever it comes from the comm
 
 	//Semahore Handles
 	SemaphoreHandle_t 				smp_sam_communication;
@@ -47,6 +51,7 @@ public:
 	uint8_t							update_pack_counter;
 
 	bool							is_uptade_needed;
+	bool							dxl_position_overwrite;
 
 	void GL_initialize();
 	void raise_command_recieved_flag_for_x_sec(int sec);
@@ -110,8 +115,8 @@ extern Global GL;
 
 //COMMON FUNCTIONS
 float wrap360(float angle);
-void read_serial_communication();
 void read_Serial_port();
 void raise_flag_to_send_update_pack();
+void toggle_flag(uint8_t bit);
 
 #endif /* TEST_BENCH_V2_ACTUATOR_V1_0_0_SYSTEM_UTILITIES_GLOBAL_H_ */

@@ -29,8 +29,8 @@
 #define	IT2_DEFAULT_MIN_OUTPUT_LIMIT	 -55
 #define	IT2_DEFAULT_MAX_OUTPUT_LIMIT	 55
 
-#define ITS_MA_FILTER_WINDOW 			10
-#define GFS_MA_FILTER_WINDOW 			10
+#define ITS_MA_FILTER_WINDOW 			25
+#define GFS_MA_FILTER_WINDOW 			25
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,13 +56,14 @@ public:
 	Joint(Joint_Settings_t joint_settings_t);
 
 	//PUBLIC PARAMETERS-------------------------------------------------------------------------------------------------
-	uint8_t	joint_id;					//Test Bench ID = Joint Angle ID
+	uint8_t				joint_id;					//Test Bench ID = Joint Angle ID
 	float				ita_curr_command;			//Includes final angle command for the related Dynamixel Actuator
 	float				jaa_mcs_curr_command;		//Includes final angle command for the related Dynamixel Actuator
 
 	//PUBLIC FUNCTIONS--------------------------------------------------------------------------------------------------
 	bool 				init_devices();
-	void				set_joint_torque(float _joint_torque_setpoint);
+
+
 	void 				update_it1_pid_coefficients(float Kp, float Ki, float Kd, float Kf);
 	void  				update_it2_pid_coefficients(float Kp, float Ki, float Kd, float Kf);
 	uint8_t				get_ita_id();
@@ -72,6 +73,9 @@ public:
 	void 				update_sensor_data(float _its, float _gfs);
 	void 				jaa_set_mcs_angle_readings(float mcs);
 	void 				ita_set_angle_readings(float pos);
+
+	void				set_joint_torque(float _joint_torque_setpoint);
+
 	float 				get_jaa_mcs_angle();
 	float 				get_jaa_ecs_angle();
 	float				get_ja_estimation();
@@ -90,10 +94,13 @@ public:
 	std::array<int,4> 	get_it2_pidf_coeff();
 	bool				get_is_ita_calibrated();
 	bool				get_is_ita_sign_positive();
+
 	float				ecs2mcs(float ecs);
 	float				mcs2ecs(float mcs);
 	bool				is_controller_on();
+	void				estimate_ja();
 	void  				ita_calibrate();
+	void				initialize_actuators();
 	void				loop();
 
 

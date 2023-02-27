@@ -6,6 +6,7 @@
  */
 
 #include "Global.h"
+#include "HardwareSerial.h"
 #include "../system_settings.h"
 #include "../../system/communication/dynamixel_pro/dynamixel_driver.h"
 
@@ -78,6 +79,7 @@ Global::Global()
 						},	//Finger_Settings_t index;
 				}
 		)
+		, fm_UARTPort(1)
 		, dxl(DXL_SERIAL, DXL_DIR_PIN)
 {
 	GL.GL_initialize();
@@ -117,30 +119,6 @@ float wrap360(float angle)
 	}
 }
 
-void read_serial_communication()
-{
-	byte buffer[255];
-
-	xSemaphoreTake(GL.smp_sam_communication, portMAX_DELAY);
-	int bytes_to_read = Serial.available();
-	if(bytes_to_read > 0 && bytes_to_read < 255)
-	{
-		Serial.readBytes(buffer, bytes_to_read);
-		GL.new_data = true;
-	}
-	else
-	{
-		//BUFFER OVERFLOW
-	}
-	xSemaphoreGive(GL.smp_sam_communication);
-
-	if(GL.new_data)
-	{
-		GL.new_data = false;
-		Catch_Data_From_Bytes(GL.sam_channel_t, buffer, bytes_to_read);
-	}
-}
-
 
 void read_Serial_port()
 {
@@ -164,4 +142,104 @@ void raise_flag_to_send_update_pack()
 {
 
 	GL.is_uptade_needed = true;
+}
+
+void toggle_flag(uint8_t bit)
+{
+	if(bit == 1)
+	{
+		if(GL.test_bit1_u.test_bit_t.TEST_BIT_1)
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_1 = false;
+		}
+		else
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_1 = true;
+		}
+	}
+
+	if(bit == 2)
+	{
+		if(GL.test_bit1_u.test_bit_t.TEST_BIT_2)
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_2 = false;
+		}
+		else
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_2 = true;
+		}
+	}
+
+	if(bit == 3)
+	{
+		if(GL.test_bit1_u.test_bit_t.TEST_BIT_3)
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_3 = false;
+		}
+		else
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_3 = true;
+		}
+	}
+
+	if(bit == 4)
+	{
+		if(GL.test_bit1_u.test_bit_t.TEST_BIT_4)
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_4 = false;
+		}
+		else
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_4 = true;
+		}
+	}
+
+	if(bit == 5)
+	{
+		if(GL.test_bit1_u.test_bit_t.TEST_BIT_5)
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_5 = false;
+		}
+		else
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_5 = true;
+		}
+	}
+
+	if(bit == 6)
+	{
+		if(GL.test_bit1_u.test_bit_t.TEST_BIT_6)
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_6 = false;
+		}
+		else
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_6 = true;
+		}
+	}
+
+	if(bit == 7)
+	{
+		if(GL.test_bit1_u.test_bit_t.TEST_BIT_7)
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_7 = false;
+		}
+		else
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_7 = true;
+		}
+	}
+
+	if(bit == 8)
+	{
+		if(GL.test_bit1_u.test_bit_t.TEST_BIT_8)
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_8 = false;
+		}
+		else
+		{
+			GL.test_bit1_u.test_bit_t.TEST_BIT_8 = true;
+		}
+	}
+
 }

@@ -59,10 +59,14 @@ bool dynamixel_initialization()
 
 	is_initialized = is_initialized & GL.dxl.ping(FINGER_1_JOINT_1_JAA_ID);
 	is_initialized = is_initialized & GL.dxl.ping(FINGER_1_JOINT_1_ITA_ID);
+	GL.right_hand.thumb_finger.joint1.initialize_actuators();
+
 	is_initialized = is_initialized & GL.dxl.ping(FINGER_1_JOINT_2_JAA_ID);
 	is_initialized = is_initialized & GL.dxl.ping(FINGER_1_JOINT_2_ITA_ID);
+	GL.right_hand.thumb_finger.joint2.initialize_actuators();
 
 	ranges_initialization();
+
 	return is_initialized;
 }
 
@@ -105,8 +109,6 @@ void torques_on()
 
 void dynamixel_sync_write(std::array<float, DXL_CNT> pwm_pos)
 {
-	//TODO - MOTOR - Motor SyncWrite Yazalim
-
 	// Fill the members of structure to syncWrite using internal packet buffer
 	sw_infos.packet.p_buf = nullptr;
 	sw_infos.packet.is_completed = false;
@@ -122,19 +124,14 @@ void dynamixel_sync_write(std::array<float, DXL_CNT> pwm_pos)
 		sw_infos.xel_count++;
 	}
 	sw_infos.is_info_changed = true;
-
+	toggle_flag(2);
 
 	//Inserting new Goal Positions
-	if(GL.right_hand.thumb_finger.joint1.is_controller_on())
-	{
 		sw_data[0].goal_position = pwm_pos[0];
 		sw_data[1].goal_position = pwm_pos[1];
-	}
-	if(GL.right_hand.thumb_finger.joint2.is_controller_on())
-	{
 		sw_data[2].goal_position = pwm_pos[2];
 		sw_data[3].goal_position = pwm_pos[3];
-	}
+
 
 
 	// Update the SyncWrite packet status
@@ -142,6 +139,7 @@ void dynamixel_sync_write(std::array<float, DXL_CNT> pwm_pos)
 	// Build a SyncWrite Packet and transmit to DYNAMIXEL
 	if(GL.dxl.syncWrite(&sw_infos) == true)
 	{
+		toggle_flag(5);
 		//Success
 		for(int i = 0; i<sw_infos.xel_count; i++)
 		{
@@ -151,6 +149,7 @@ void dynamixel_sync_write(std::array<float, DXL_CNT> pwm_pos)
 	}
 	else
 	{
+		toggle_flag(6);
 		//FAIL
 		//Serial.print("[SyncWrite] Fail, Lib error code: ");
 		//Serial.println(GL.dxl.getLastLibErrCode());

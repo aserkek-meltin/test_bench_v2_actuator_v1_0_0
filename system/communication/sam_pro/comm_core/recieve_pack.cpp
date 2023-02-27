@@ -11,7 +11,6 @@
 void solve_pack(const SAM_Pack_t *p_incoming_sam_t)
 {
 	//GL.last_pack_time = now
-	//toggle_flag();
 	GL.status_u.status_t.COMMAND_RECIEVED 	= true;
 	GL.temp_command_recieved_counter 		= 0;
 	switch(p_incoming_sam_t->pack_type_u8)

@@ -14,6 +14,6 @@ void apply_commands();
 void apply_settings();
 void update_lut();
 void update_pid_coef();
-void update_ita_limits();
+void read_serial_communication();
 
 #endif /* TEST_BENCH_ACTUATOR_COMMUNICATION_PACK_FUNCTIONS_H_ */

@@ -34,12 +34,22 @@ void apply_commands()
 			case(SAM_CMD_BWBS_CALIBRATE):
 			{
 				//TODO - BWBS calibrate
-					break;
+				break;
 			}
 			case(SAM_CMD_SENSORS_CALIBRATE):
 			{
 				//TODO - Sensors calibrate
-					break;
+				break;
+			}
+			case(SAM_CMD_DXL_POSITION_OVERWRITE_OFF):
+			{
+				GL.dxl_position_overwrite = false;
+				break;
+			}
+			case(SAM_CMD_DXL_POSITION_OVERWRITE_ON):
+			{
+				GL.dxl_position_overwrite = true;
+				break;
 			}
 			default:
 				break;
@@ -65,7 +75,6 @@ void apply_settings()
 		}
 		case(SAM_STG_ITA_POS_uM_SP):
 		{
-
 			if(GL.sam_settings_pack_t.target_joint_id == 0)
 			{
 				if(GL.right_hand.thumb_finger.joint1.get_is_ita_calibrated())
@@ -75,7 +84,8 @@ void apply_settings()
 				}
 				else
 				{
-					GL.right_hand.thumb_finger.joint1.ita_curr_command = GL.right_hand.thumb_finger.joint1.get_ita_angle() + (GL.right_hand.thumb_finger.joint1.get_is_ita_sign_positive() * GL.sam_settings_pack_t.data * 4096 /15000);
+					toggle_flag(1);
+					GL.right_hand.thumb_finger.joint1.ita_curr_command = GL.right_hand.thumb_finger.joint1.get_ita_angle() + (GL.right_hand.thumb_finger.joint1.get_is_ita_sign_positive() * GL.sam_settings_pack_t.data * 4096 / 15000);
 				}
 			}
 			else if(GL.sam_settings_pack_t.target_joint_id == 1)
@@ -87,7 +97,7 @@ void apply_settings()
 				}
 				else
 				{
-					GL.right_hand.thumb_finger.joint2.ita_curr_command = GL.right_hand.thumb_finger.joint2.get_ita_angle() + (GL.right_hand.thumb_finger.joint2.get_is_ita_sign_positive() * GL.sam_settings_pack_t.data * 4096 /15000);
+					GL.right_hand.thumb_finger.joint2.ita_curr_command = GL.right_hand.thumb_finger.joint2.get_ita_angle() + (GL.right_hand.thumb_finger.joint2.get_is_ita_sign_positive() * GL.sam_settings_pack_t.data * 4096 / 15000);
 				}
 			}
 			break;
@@ -145,5 +155,29 @@ void update_pid_coef()
 	else if(GL.sam_pid_settings_pack_t.controller_id == 1 && GL.sam_settings_pack_t.target_hand_id == 0 && GL.sam_settings_pack_t.target_finger_id == 0 && GL.sam_settings_pack_t.target_joint_id == 1)
 	{
 		GL.right_hand.thumb_finger.joint2.update_it2_pid_coefficients(GL.sam_pid_settings_pack_t.kp, GL.sam_pid_settings_pack_t.ki, GL.sam_pid_settings_pack_t.kd, GL.sam_pid_settings_pack_t.kf);
+	}
+}
+
+void read_serial_communication()
+{
+	byte buffer[255];
+
+	xSemaphoreTake(GL.smp_sam_communication, portMAX_DELAY);
+	int bytes_to_read = Serial.available();
+	if(bytes_to_read > 0 && bytes_to_read < 255)
+	{
+		Serial.readBytes(buffer, bytes_to_read);
+		GL.new_data = true;
+	}
+	else
+	{
+		//BUFFER OVERFLOW
+	}
+	xSemaphoreGive(GL.smp_sam_communication);
+
+	if(GL.new_data)
+	{
+		GL.new_data = false;
+		Catch_Data_From_Bytes(GL.sam_channel_t, buffer, bytes_to_read);
 	}
 }

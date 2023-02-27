@@ -18,6 +18,8 @@ typedef enum
     SAM_CMD_ACTUATORS_TORQUES_ON,
     SAM_CMD_BWBS_CALIBRATE,
     SAM_CMD_SENSORS_CALIBRATE,
+    SAM_CMD_DXL_POSITION_OVERWRITE_OFF,
+    SAM_CMD_DXL_POSITION_OVERWRITE_ON,
 }commands;
 
 typedef enum
@@ -45,6 +47,15 @@ typedef enum
 	STATUS_PACK,
 	UPDATE_PACK,
 }pack_types;
+
+//TODO - DELETE
+typedef struct{
+	float ja_1;
+	float ja_2;
+	float correction;
+	int pack_number;
+	bool is_pack_healthy;
+} Communication_pack_t;
 
 typedef struct
 {

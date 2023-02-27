@@ -49,10 +49,11 @@ void send_status_pack()
 
 	//GLOBAL
 	status_pack_t.system_counter_s 	= GL.system_counter_s;
+	GL.errors_u.error_t.RESERVED1 = GL.dxl_position_overwrite;
 
 	UINT8 errors = 	GL.errors_u.error_t.GFS_COULDNT_INITIALIZED 	<< 7 |
 			        GL.errors_u.error_t.ITS_COULDNT_INITIALIZED 	<< 6 |
-			        GL.errors_u.error_t.BENDING_ESTIMATION_NOT_SURE	<< 5 |
+			        GL.errors_u.error_t.I2C_MUX_COULDNT_INITIALIZED	<< 5 |
 			        GL.errors_u.error_t.ITA_COMMUNICATION_ERROR 	<< 4 |
 			        GL.errors_u.error_t.JAA_COMMUNICATION_ERROR 	<< 3 |
 			        GL.errors_u.error_t.SWB_COMMUNICATION_ERROR 	<< 2 |
@@ -88,9 +89,9 @@ void send_status_pack()
 			status_pack_t.joint_it2_est		= GL.right_hand.thumb_finger.joint1.get_it2();
 			status_pack_t.joint_it2_sp		= GL.right_hand.thumb_finger.joint1.get_it2_setpoint();
 
-			status_pack_t.test_value0_f32	= 7;
-			status_pack_t.test_value1_f32 	= 8;
-			status_pack_t.test_value2_f32 	= 9;
+			status_pack_t.test_value0_f32	= GL.right_hand.thumb_finger.joint1.ita_curr_command;
+			status_pack_t.test_value1_f32 	= GL.right_hand.thumb_finger.joint1.get_ita_angle();
+			status_pack_t.test_value2_f32 	= GL.sam_settings_pack_t.data;
 			status_pack_t.test_value3_f32 	= 10;
 			status_pack_t.test_value4_f32 	= 11;
 
@@ -110,9 +111,9 @@ void send_status_pack()
 			status_pack_t.joint_it2_est		= GL.right_hand.thumb_finger.joint2.get_it2();
 			status_pack_t.joint_it2_sp		= GL.right_hand.thumb_finger.joint2.get_it2_setpoint();
 
-			status_pack_t.test_value0_f32	= 7;
-			status_pack_t.test_value1_f32 	= 8;
-			status_pack_t.test_value2_f32 	= 9;
+			status_pack_t.test_value0_f32	= GL.right_hand.thumb_finger.joint1.ita_curr_command;
+			status_pack_t.test_value1_f32 	= GL.right_hand.thumb_finger.joint1.get_ita_angle();
+			status_pack_t.test_value2_f32 	= GL.sam_settings_pack_t.data;
 			status_pack_t.test_value3_f32 	= 10;
 			status_pack_t.test_value4_f32 	= 11;
 

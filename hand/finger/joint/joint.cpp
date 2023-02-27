@@ -71,6 +71,7 @@ void Joint::loop()
 	calculate_it1_it2_estimateds();
 	it1_controller();
 	it2_controller();
+	estimate_ja();
 }
 
 
@@ -292,6 +293,17 @@ void Joint::ita_set_angle_readings(float pos)
 
 
 // UTILITY FUNCTIONS ////////////////////////////////////////////////////////////////////////////////////////////////
+void Joint::estimate_ja()
+{
+	if(joint_id == 1)
+	{
+		ja.raw = GL.communication_pack_t.ja_1;
+	}
+	else
+	{
+		ja.raw = GL.communication_pack_t.ja_2;
+	}
+}
 void Joint::ita_calibrate()
 {
 	uint8_t sign = 0;
@@ -373,9 +385,9 @@ void Joint::it1_controller()
 	if(it1_pid_settings_t.is_control_on)
 	{
 		it1_pid.Compute();
+		ita_calculate_output_safe();
+		ita_curr_command		= ita.curr_command;
 	}
-	ita_calculate_output_safe();
-	ita_curr_command		= ita.curr_command;
 }
 
 void Joint::it2_controller()
@@ -389,10 +401,26 @@ void Joint::it2_controller()
 	if(it2_pid_settings_t.is_control_on)
 	{
 		it2_pid.Compute();
+		jaa_calculate_output_safe();
+		jaa_mcs_curr_command 	= jaa_mcs.curr_command;
 	}
 
-	jaa_calculate_output_safe();
-	jaa_mcs_curr_command 	= jaa_mcs.curr_command;
+}
+
+void Joint::initialize_actuators()
+{
+	//Initialize JAA
+	GL.dxl.torqueOff(get_jaa_id());
+	GL.dxl.setOperatingMode(get_jaa_id(), OP_POSITION);
+	delay(100);
+	jaa_mcs.starting = GL.dxl.getPresentPosition(get_jaa_id(), UNIT_DEGREE);
+	jaa_ecs.starting = mcs2ecs(jaa_mcs.starting);
+
+	//Initialize ITA
+	GL.dxl.torqueOff(get_ita_id());
+	GL.dxl.setOperatingMode(get_ita_id(), OP_POSITION);
+	delay(100);
+	ita.starting = GL.dxl.getPresentPosition(get_ita_id(), UNIT_RAW);
 }
 
 
